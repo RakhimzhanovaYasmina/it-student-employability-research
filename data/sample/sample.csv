@@ -1,0 +1,9 @@
+student_id,professional_experience,academic_projects,internship,technical_skills,communication_skills,applications_sent,interview_invitations,job_offers
+S01,no,2,no,3,4,12,1,0
+S02,no,4,yes,4,4,20,4,1
+S03,yes,3,yes,4,3,15,3,1
+S04,no,1,no,2,3,18,0,0
+S05,yes,5,yes,5,4,25,6,2
+S06,no,3,no,3,2,10,1,0
+S07,no,2,yes,4,5,16,3,1
+S08,yes,4,no,4,3,22,4,1
