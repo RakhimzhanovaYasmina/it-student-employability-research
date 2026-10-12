@@ -1,2 +1,1 @@
-# No third-party Python dependencies are required.
-# Tested with Python 3.14.3.
+PyYAML==6.0.3
