@@ -1,6 +1,6 @@
 # IT Student Employability Research
 
-**Authors:** Rakhimzhanova Yasmina
+**Authors:** Rakhimzhanova Yasmina and Utebayeva Anel
 
 ## Overview
 

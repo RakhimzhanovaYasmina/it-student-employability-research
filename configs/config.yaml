@@ -20,8 +20,14 @@ variables:
     - interview_invitations
     - job_offers
 
-  controlled:
+  exposure_denominator:
     - applications_sent
+
+  potential_confounders:
+    - professional_experience
+    - academic_projects
+    - technical_skills
+    - communication_skills
 
 metrics:
   primary: "interview_invitation_rate"
@@ -34,7 +40,7 @@ metrics:
 
 baseline:
   comparison: "internship_yes_vs_no"
-  note: "Exploratory comparison using synthetic data only."
+  note: "Exploratory comparison using synthetic data only; no causal conclusions."
 
 analysis:
   alpha: 0.05

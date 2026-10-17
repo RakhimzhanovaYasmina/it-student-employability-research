@@ -4,7 +4,7 @@
 
 **Research Title:** Improving the Employability of IT Students with Little or No Professional Work Experience
 
-**Authors:** Rakhimzhanova Yasmina 
+**Authors:** Rakhimzhanova Yasmina and Utebayeva Anel 
 
 **GitHub Repository:** https://github.com/RakhimzhanovaYasmina/it-student-employability-research
 
