@@ -32,11 +32,14 @@ variables:
 metrics:
   primary: "interview_invitation_rate"
   secondary:
-    - "job_offer_rate"
+    - "job_offer_rate_per_application"
     - "average_interview_invitations"
   guardrails:
     - "missing_values"
+    - "missing_record_rate_percent"
     - "invalid_records"
+    - "eligible_sample_size"
+    - "data_consistency"
 
 baseline:
   comparison: "internship_yes_vs_no"
