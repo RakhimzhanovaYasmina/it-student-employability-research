@@ -43,7 +43,10 @@ def load_config(path):
     if "data" not in config or "project" not in config:
         raise ValueError("Config must contain 'data' and 'project' sections.")
 
-    if "input_path" not in config["data"] or "output_path" not in config["data"]:
+    if (
+        "input_path" not in config["data"]
+        or "output_path" not in config["data"]
+    ):
         raise ValueError("Config must define input_path and output_path.")
 
     return config
@@ -57,7 +60,8 @@ def load_data(path):
             raise ValueError("The input CSV file has no header.")
 
         missing_columns = [
-            column for column in REQUIRED_COLUMNS
+            column
+            for column in REQUIRED_COLUMNS
             if column not in reader.fieldnames
         ]
 
@@ -78,7 +82,8 @@ def analyze(data):
 
     for row in data:
         missing_fields = [
-            column for column in REQUIRED_COLUMNS
+            column
+            for column in REQUIRED_COLUMNS
             if row.get(column) is None or not row[column].strip()
         ]
 
@@ -108,10 +113,12 @@ def analyze(data):
 
             try:
                 number = int(value)
+
                 if number < 0:
                     invalid = True
                 else:
                     numeric_values[column] = number
+
             except ValueError:
                 invalid = True
 
@@ -124,8 +131,10 @@ def analyze(data):
 
             try:
                 rating = int(value)
+
                 if not 1 <= rating <= 5:
                     invalid = True
+
             except ValueError:
                 invalid = True
 
@@ -161,12 +170,19 @@ def analyze(data):
 
     total_students = len(valid_rows)
 
+    # Percentage of all input records containing missing values.
+    missing_record_rate_percent = round(
+        records_with_missing_values / len(data) * 100, 2
+    )
+
     total_applications = sum(
         int(row["applications_sent"]) for row in valid_rows
     )
+
     total_invitations = sum(
         int(row["interview_invitations"]) for row in valid_rows
     )
+
     total_offers = sum(
         int(row["job_offers"]) for row in valid_rows
     )
@@ -175,16 +191,19 @@ def analyze(data):
 
     for status in ("yes", "no"):
         group = [
-            row for row in valid_rows
+            row
+            for row in valid_rows
             if row["internship"].strip().lower() == status
         ]
 
         group_invitations = sum(
             int(row["interview_invitations"]) for row in group
         )
+
         group_applications = sum(
             int(row["applications_sent"]) for row in group
         )
+
         group_offers = sum(
             int(row["job_offers"]) for row in group
         )
@@ -218,6 +237,7 @@ def analyze(data):
         "records_total": len(data),
         "records_analyzed": total_students,
         "records_with_missing_values": records_with_missing_values,
+        "missing_record_rate_percent": missing_record_rate_percent,
         "missing_values": missing_values,
         "invalid_records": invalid_records,
         "total_applications": total_applications,
@@ -252,6 +272,7 @@ def main():
 
     data = load_data(input_path)
     results = analyze(data)
+
     results["data_type"] = config["project"].get(
         "data_type", "synthetic_demo"
     )
@@ -264,7 +285,14 @@ def main():
     print("Research pipeline completed successfully.")
     print(f"Records analyzed: {results['records_analyzed']}")
     print(f"Missing values: {results['missing_values']}")
-    print(f"Records with missing values: {results['records_with_missing_values']}")
+    print(
+        "Records with missing values: "
+        f"{results['records_with_missing_values']}"
+    )
+    print(
+        "Missing record rate (%): "
+        f"{results['missing_record_rate_percent']}"
+    )
     print(f"Invalid records: {results['invalid_records']}")
     print(
         "Interview invitation rate: "
