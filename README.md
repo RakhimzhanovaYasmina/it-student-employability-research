@@ -1,135 +1,231 @@
+
 # IT Student Employability Research
 
 **Authors:** Rakhimzhanova Yasmina and Utebayeva Anel
 
-## Overview
+## 1. Overview
 
 This project investigates factors associated with the employability of IT students who have little or no professional work experience.
 
-The research focuses on difficulties in finding a first IT job, practical experience gained through academic projects and internships, and the role of technical and communication skills.
+The research focuses on the role of professional experience, academic projects, internships, technical skills, and communication skills in students' employment prospects.
 
-The repository provides a reproducible data-analysis pipeline for checking data quality and calculating descriptive employment-related metrics.
+The repository provides a reproducible data-analysis workflow, including data validation, descriptive statistics, data-quality checks, and scientific visualizations.
 
-## Research Questions
+**Data status:** The current dataset contains eight synthetic demonstration records. All results are preliminary pipeline-testing outputs, not empirical evidence about the student population.
 
-- **RQ1:** What are the main difficulties and factors affecting the search for a first job among IT students with little or no professional experience?
-- **RQ2:** How does practical experience gained through academic projects and internships relate to employment prospects?
-- **RQ3:** How are technical and communication skills associated with employment prospects?
+## 2. Research Questions
 
-## Research Hypotheses
+- **RQ1:** What factors are associated with difficulties in finding a first IT job among students with little or no professional experience?
+- **RQ2:** How are academic projects and internships associated with employment-related outcomes?
+- **RQ3:** How are technical and communication skills associated with employment-related outcomes?
 
-The following alternative hypotheses are based on Task 1.
+## 3. Research Hypotheses
 
-- **H1₁:** Lack of professional experience is associated with greater difficulty finding a first job.
-- **H1₂:** Students with practical experience from academic projects or internships have better employment prospects.
-- **H1₃:** Higher technical and communication skills are associated with better employment prospects.
+The following hypotheses are based on the earlier project work:
 
-The corresponding null hypotheses state that there is no statistically significant relationship between the respective factors and employment outcomes.
+- **H1:** Lack of professional experience is associated with greater difficulty finding a first job.
+- **H2:** Students with practical experience from academic projects or internships have better employment prospects.
+- **H3:** Higher technical and communication skills are associated with better employment prospects.
 
-These hypotheses have not yet been empirically tested by the demonstration pipeline.
+The corresponding null hypotheses state that there is no association between the respective factors and employment-related outcomes.
 
-## Current Data Status
+These hypotheses have **not been empirically tested** using real student data. The current synthetic dataset is insufficient to draw conclusions about the hypotheses.
 
-The included file `data/sample/sample.csv` contains eight synthetic demonstration records. These records are used exclusively to test the analysis pipeline and do not represent real students.
+## 4. Dataset and Variables
 
-The generated results must not be interpreted as evidence confirming or rejecting the research hypotheses. Empirical conclusions require suitable real-world data and an appropriate statistical analysis.
+The demonstration dataset is stored in `data/sample/sample.csv`.
 
-## Repository Structure
+It contains eight synthetic records and includes the following variables:
+
+| Variable | Description |
+|---|---|
+| `student_id` | Synthetic record identifier |
+| `professional_experience` | Whether professional experience is reported |
+| `academic_projects` | Number of academic projects |
+| `internship` | Whether internship experience is reported |
+| `technical_skills` | Technical skills score |
+| `communication_skills` | Communication skills score |
+| `applications_sent` | Number of job applications |
+| `interview_invitations` | Number of interview invitations |
+| `job_offers` | Number of job offers |
+
+The records are artificial and do not represent actual students. They are used to validate the analysis pipeline and demonstrate the expected outputs.
+
+## 5. Methodology
+
+The analysis workflow consists of the following stages:
+
+1. Load the sample dataset.
+2. Validate required columns and record identifiers.
+3. Check numeric values and consistency between applications, interview invitations, and job offers.
+4. Calculate interview invitation and job offer rates.
+5. Calculate descriptive statistics, including the mean, median, percentiles, and standard deviation.
+6. Estimate bootstrap 95% confidence intervals for mean rates.
+7. Generate visualizations and export them in PNG and PDF formats.
+8. Save statistical summaries and data-quality results for reproducibility.
+
+The bootstrap uses a fixed random seed to make the demonstration calculations reproducible.
+
+Because the dataset contains only eight synthetic records, the percentiles and confidence intervals are illustrative and should not be interpreted as reliable population estimates.
+
+## 6. Results & Discussion
+
+### 6.1 Descriptive statistics
+
+The following results were calculated from the eight synthetic demonstration records.
+
+| Indicator | n | Mean | Median | 95% bootstrap CI for mean |
+|---|---:|---:|---:|---:|
+| Interview invitation rate | 8 | 14.91% | 18.47% | 9.39%–19.87% |
+| Job offer rate per application | 8 | 3.81% | 4.77% | 1.63%–5.89% |
+
+**Definitions**
+
+- **Interview invitation rate:** interview invitations divided by job applications for each record.
+- **Job offer rate per application:** job offers divided by job applications for each record.
+- **95% bootstrap confidence interval:** an interval estimated by resampling the available records to illustrate uncertainty in the sample mean.
+
+The summary statistics describe the current demonstration dataset only. The small sample and synthetic nature of the records limit their interpretation.
+
+### 6.2 Scientific visualizations
+
+**Figure 1. Interview invitation rate by internship status**
+
+This figure displays individual records and group means with 95% bootstrap confidence intervals.
+
+- [View PNG](reports/figures/fig1_internship_comparison.png)
+- [View PDF](reports/figures/fig1_internship_comparison.pdf)
+
+**Figure 2. Distribution of employability indicators**
+
+This figure compares the distributions of interview invitation rates and job offer rates per application, showing individual records alongside boxplots.
+
+- [View PNG](reports/figures/fig2_rate_distributions.png)
+- [View PDF](reports/figures/fig2_rate_distributions.pdf)
+
+Both figures are exported as PNG at 300 DPI and as PDF.
+
+### 6.3 Data quality
+
+The current eight-record demonstration dataset passed the implemented checks:
+
+| Data-quality check | Invalid records detected |
+|---|---:|
+| Negative applications | 0 |
+| Negative interview invitations | 0 |
+| Negative job offers | 0 |
+| Interview invitations exceeding applications | 0 |
+| Job offers exceeding applications | 0 |
+
+These checks confirm that the sample passes the implemented validation rules. They do not establish that the data are representative or that all possible data-quality problems have been eliminated.
+
+### 6.4 Interpretation
+
+The pipeline successfully demonstrates data processing, descriptive statistics, bootstrap confidence intervals, data-quality checks, and figure export.
+
+The internship comparison is exploratory. It cannot establish that internships cause better employment outcomes. Any apparent differences may also reflect other variables.
+
+No conclusion about H1, H2, or H3 can be justified from these synthetic records. Testing the research hypotheses requires real, appropriately collected student data and a suitable statistical analysis.
+
+## 7. Baseline and Future Evaluation
+
+The current exploratory baseline compares interview invitation rates between records with and without internship experience.
+
+A future empirical evaluation should use a documented data-collection procedure and a sufficiently large sample of actual IT students. The analysis should define the outcome variables in advance, examine missing data, account for relevant confounding factors, and use statistical methods appropriate to the research questions and data.
+
+The current comparison is a pipeline demonstration, not a completed empirical evaluation.
+
+## 8. Repository Structure
 
 ```text
 .
 ├── configs/
 │   └── config.yaml
 ├── data/
-│   └── sample/
-│       └── sample.csv
+│   ├── sample/
+│   │   └── sample.csv
+│   └── processed/
+│       └── metrics_summary.csv
 ├── docs/
 │   └── methodology_passport.md
 ├── notebooks/
+│   ├── 01_data_analysis.ipynb
+│   └── README.md
+├── reports/
+│   └── figures/
+│       ├── fig1_internship_comparison.png
+│       ├── fig1_internship_comparison.pdf
+│       ├── fig2_rate_distributions.png
+│       └── fig2_rate_distributions.pdf
+├── results/
+│   ├── analysis_summary.json
+│   ├── statistical_summary.csv
+│   └── data_quality_summary.csv
 ├── src/
-│   └── benchmark.py
+│   ├── benchmark.py
+│   ├── process_data.py
+│   ├── statistical_analysis.py
+│   └── visualize.py
 ├── .gitignore
 ├── .python-version
+├── requirements.txt
 ├── LICENSE
-├── README.md
-└── requirements.txt
+└── README.md
 ```
 
-The `results/` directory is generated locally when the script runs and is excluded from Git.
+The domain model document will be added under `docs/domain_model.md` when its contents are finalized.
 
-## System Requirements
+## 9. Reproducibility
 
-- Python 3.14.3
-- Git for version control
-- PyYAML 6.0.3, specified in `requirements.txt`
+The repository includes source scripts, a demonstration dataset, a configuration file, a Jupyter Notebook, and generated analysis outputs.
 
-The required Python version is recorded in `.python-version`.
+Run the scripts from the repository root. The commands below use the virtual environment's Python executable on Windows.
 
-## Quickstart
-
-Run the following commands from the repository root.
-
-**1. Verify the Python version:**
+Install the required packages if they are not already installed:
 
 ```bash
-python --version
+python -m pip install pandas numpy matplotlib seaborn jupyter PyYAML
 ```
 
-Expected output:
-
-```text
-Python 3.14.3
-```
-
-**2. Install the pinned dependency:**
+Run the data-processing step:
 
 ```bash
-python -m pip install -r requirements.txt
+python src/process_data.py
 ```
 
-**3. Run the demonstration experiment:**
+Run the statistical analysis:
 
 ```bash
-python src/benchmark.py
+python src/statistical_analysis.py
 ```
 
-The script reads the input and output paths from `configs/config.yaml`, processes the sample data, and writes the analysis summary to `results/analysis_summary.json`.
+Generate the figures:
 
-A successful run prints the number of records analyzed and the interview invitation rate. The script also identifies the output as synthetic demonstration data.
+```bash
+python src/visualize.py
+```
 
-## Planned Evaluation Metrics
+Open the notebook:
 
-| Metric | Type | Purpose |
-|---|---|---|
-| Interview invitation rate | Primary | Measures interview invitations relative to job applications |
-| Job offer rate per application | Secondary | Measures job offers relative to job applications |
-| Average interview invitations | Secondary | Calculates the mean number of interview invitations per record |
-| Missing values | Guardrail | Checks data completeness |
-| Invalid records | Guardrail | Checks basic data consistency |
+```bash
+jupyter notebook notebooks/01_data_analysis.ipynb
+```
 
-The metrics are currently demonstrated on synthetic data. Their suitability for testing the research hypotheses must be reassessed when real data and the data-collection procedure are established.
+The scripts save processed data, statistical summaries, data-quality results, and figures to the project directories. The current output files are retained in the repository to support inspection and reproducibility.
 
-## Baseline
+**Note:** The Python package requirements should be kept consistent with the dependencies used by the scripts and notebook.
 
-The demonstration pipeline compares records with and without internship experience.
+## 10. Limitations and Next Steps
 
-This is an exploratory observational comparison, not a randomized experiment. Differences between the groups may be influenced by other factors, including technical skills, communication skills, academic projects, and previous professional experience.
+The main limitations are:
 
-The synthetic comparison does not establish a real-world relationship between internships and employability.
+- The current dataset contains only eight synthetic records.
+- The results cannot be generalized to the student population.
+- The analysis is descriptive and does not establish causality.
+- The research hypotheses have not been tested on empirical data.
+- The data-collection procedure and the suitability of the measures must be established before substantive conclusions can be drawn.
 
-## Reproducibility
-
-The repository contains the analysis script, configuration file, sample data, and dependency specification.
-
-The script uses the configuration file to locate the input data and output file. Generated analysis results are excluded from Git and can be recreated by running the Quickstart commands.
-
-The dependency version is pinned in `requirements.txt`. The Python version is recorded in `.python-version`.
-
-## Limitations and Next Steps
-
-The current pipeline performs descriptive analysis and basic data-quality checks. It does not perform statistical hypothesis tests.
-
-The next research stage is to collect suitable empirical data, assess data quality, refine the operational definitions of the variables, and conduct appropriate statistical analyses to evaluate the hypotheses.
+The next steps are to finalize the domain model, document the research methodology, collect suitable real-world data, and conduct an appropriate empirical evaluation.
 
 ## License
 
@@ -137,6 +233,6 @@ This project is distributed under the MIT License. See the `LICENSE` file for de
 
 ## Citation
 
-Rakhimzhanova, Y., and Utebayeva, A. *IT Student Employability Research*. Student research project, Task 2.
+Rakhimzhanova, Y., and Utebayeva, A. *IT Student Employability Research*. Student research project.
 
 Repository: https://github.com/RakhimzhanovaYasmina/it-student-employability-research
