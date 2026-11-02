@@ -2,6 +2,7 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 import numpy as np
 import pandas as pd
 
@@ -23,7 +24,7 @@ def bootstrap_mean_ci(values, rng):
         return np.nan, np.nan
 
     if len(values) == 1:
-        return values[0], values[0]
+        return float(values[0]), float(values[0])
 
     samples = rng.choice(
         values,
@@ -33,7 +34,7 @@ def bootstrap_mean_ci(values, rng):
     means = samples.mean(axis=1)
 
     lower, upper = np.percentile(means, [2.5, 97.5])
-    return lower, upper
+    return float(lower), float(upper)
 
 
 def load_data():
@@ -89,7 +90,7 @@ def plot_internship_comparison(data):
         values = data.loc[
             data["internship"] == value,
             "interview_invitation_rate",
-        ].dropna().to_numpy()
+        ].dropna().to_numpy(dtype=float)
 
         if len(values) > 0:
             groups.append(values * 100)
@@ -98,33 +99,40 @@ def plot_internship_comparison(data):
     if not groups:
         raise ValueError("No valid internship groups found.")
 
-    fig, ax = plt.subplots(figsize=(8, 5))
-
+    fig, ax = plt.subplots(figsize=(8, 5.5))
     positions = np.arange(1, len(groups) + 1)
 
-    for position, values, label in zip(positions, groups, labels):
-        mean = np.mean(values)
+    for position, values in zip(positions, groups):
+        mean = float(np.mean(values))
         lower, upper = bootstrap_mean_ci(values, rng)
 
+        # Individual student observations.
+        jitter = rng.uniform(-0.045, 0.045, size=len(values))
         ax.scatter(
-            np.full(len(values), position),
+            position + jitter,
             values,
             marker="o",
             s=55,
-            alpha=0.75,
+            alpha=0.8,
             label="Individual students" if position == 1 else None,
+            zorder=3,
         )
 
+        # Mean and bootstrap 95% confidence interval.
         ax.errorbar(
             position,
             mean,
-            yerr=[[mean - lower], [upper - mean]],
+            yerr=[
+                [max(0.0, mean - lower)],
+                [max(0.0, upper - mean)],
+            ],
             fmt="D",
             capsize=6,
             markersize=7,
             color="black",
             label="Mean with bootstrap 95% CI"
             if position == 1 else None,
+            zorder=4,
         )
 
     ax.set_xticks(positions)
@@ -136,7 +144,7 @@ def plot_internship_comparison(data):
         "Synthetic demonstration data"
     )
     ax.grid(axis="y", linestyle="--", alpha=0.35)
-    ax.legend()
+    ax.legend(loc="best", frameon=True)
     fig.tight_layout()
 
     save_figure(fig, "fig1_internship_comparison")
@@ -145,10 +153,12 @@ def plot_internship_comparison(data):
 def plot_rate_distributions(data):
     """Show distributions of interview and job-offer rates."""
     interview_rates = (
-        data["interview_invitation_rate"].dropna().to_numpy() * 100
+        data["interview_invitation_rate"].dropna().to_numpy(dtype=float)
+        * 100
     )
     offer_rates = (
-        data["job_offer_rate_per_application"].dropna().to_numpy() * 100
+        data["job_offer_rate_per_application"].dropna().to_numpy(dtype=float)
+        * 100
     )
 
     distributions = []
@@ -165,16 +175,39 @@ def plot_rate_distributions(data):
     if not distributions:
         raise ValueError("No valid rate values available for plotting.")
 
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(9, 5.5))
 
     ax.boxplot(
         distributions,
         tick_labels=labels,
         showmeans=True,
+        showfliers=False,
         patch_artist=False,
+        meanprops={
+            "marker": "^",
+            "markerfacecolor": "green",
+            "markeredgecolor": "green",
+            "markersize": 8,
+        },
+        medianprops={
+            "color": "darkorange",
+            "linewidth": 2,
+        },
+        boxprops={
+            "color": "black",
+            "linewidth": 1.4,
+        },
+        whiskerprops={
+            "color": "black",
+            "linewidth": 1.4,
+        },
+        capprops={
+            "color": "black",
+            "linewidth": 1.4,
+        },
     )
 
-    # Display individual student observations.
+    # Plot individual student observations with small horizontal offsets.
     rng = np.random.default_rng(RANDOM_SEED)
 
     for position, values in enumerate(distributions, start=1):
@@ -183,10 +216,46 @@ def plot_rate_distributions(data):
             position + jitter,
             values,
             marker="o",
-            s=35,
-            alpha=0.7,
+            s=42,
+            alpha=0.75,
+            zorder=3,
         )
 
+    # Explicit legend for all displayed statistics.
+    legend_handles = [
+        Line2D(
+            [0], [0],
+            marker="o",
+            linestyle="none",
+            markerfacecolor="steelblue",
+            markeredgecolor="steelblue",
+            markersize=7,
+            label="Individual students",
+        ),
+        Line2D(
+            [0], [0],
+            color="darkorange",
+            linewidth=2,
+            label="Median",
+        ),
+        Line2D(
+            [0], [0],
+            marker="^",
+            linestyle="none",
+            markerfacecolor="green",
+            markeredgecolor="green",
+            markersize=8,
+            label="Mean",
+        ),
+        Line2D(
+            [0], [0],
+            color="black",
+            linewidth=1.4,
+            label="Whiskers: 1.5 × IQR",
+        ),
+    ]
+
+    ax.legend(handles=legend_handles, loc="best", frameon=True)
     ax.set_ylabel("Rate per application (%)")
     ax.set_xlabel("Employment outcome")
     ax.set_title(
