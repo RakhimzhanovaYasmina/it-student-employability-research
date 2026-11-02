@@ -1,0 +1,6 @@
+check,number_of_records,data_type,interpretation
+Negative applications,0,synthetic_demo,Demonstration only; do not generalize to the student population.
+Negative interview invitations,0,synthetic_demo,Demonstration only; do not generalize to the student population.
+Negative job offers,0,synthetic_demo,Demonstration only; do not generalize to the student population.
+Invitations exceeding applications,0,synthetic_demo,Demonstration only; do not generalize to the student population.
+Offers exceeding applications,0,synthetic_demo,Demonstration only; do not generalize to the student population.
