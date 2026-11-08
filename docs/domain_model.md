@@ -55,7 +55,7 @@ C4Container
 
 | Node | Container | Metrics produced | Output |
 |---|---|---|---|
-| M1 | Data Processing | Interview invitation rate, job offer rate per application (per student); number of excluded records | `data/processed/metrics_summary.csv` |
+| M1 | Data Processing | Interview invitation rate, job offer rate per application (per student); excluded-record count (printed to console) | `data/processed/metrics_summary.csv` |
 | M2 | Statistical Analysis | Mean, median, p95, p99, SD (n−1), bootstrap 95% CI of the mean | `results/statistical_summary.csv` |
 | M3 | Statistical Analysis | **Guardrail metrics:** records with missing values, negative counts, invitations > applications, offers > applications | `results/data_quality_summary.csv` |
 | M4 | Baseline Comparison | Group rates for internship = yes vs no (baseline comparison) | `results/analysis_summary.json` |
@@ -72,42 +72,17 @@ C4Container
 
 Primary metric: `interview_invitation_rate`. Secondary: `job_offer_rate_per_application`.
 
-## 5. Formal definitions
+## 5. Metric definitions
 
-For student $i$ let $A_i$ be the number of applications, $I_i$ the interview invitations and $O_i$ the job offers, with $0 \le I_i \le A_i$ and $0 \le O_i \le A_i$. Records that violate this are excluded. For $A_i > 0$:
+- **Interview invitation rate** = interview invitations / applications sent (per student).
+- **Job offer rate per application** = job offers / applications sent (per student).
+- **Pooled rate** = sum of invitations (or offers) over all students / sum of applications over all students.
+- **Median, p95, p99** = 50th, 95th and 99th percentiles of the per-student rates (linear interpolation).
+- **SD** = sample standard deviation (n − 1).
+- **Bootstrap 95% CI** = the 2.5th and 97.5th percentiles of the means of 5000 resamples drawn with replacement (`numpy` generator, seed 42).
+- **Missing-record rate** = records with missing values / input records × 100%.
 
-$$
-R_{I,i} = \frac{I_i}{A_i}, \qquad R_{O,i} = \frac{O_i}{A_i}
-$$
-
-Overall (pooled) rates over the $N$ valid records:
-
-$$
-R_I = \frac{\sum_{i=1}^{N} I_i}{\sum_{i=1}^{N} A_i}, \qquad
-R_O = \frac{\sum_{i=1}^{N} O_i}{\sum_{i=1}^{N} A_i}
-$$
-
-Sample mean and standard deviation of a metric $x_1,\dots,x_n$:
-
-$$
-\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i, \qquad
-s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})^2}
-$$
-
-Percentiles $p_{95}$ and $p_{99}$ are the 95th and 99th sample percentiles (linear interpolation), and the median is $p_{50}$.
-
-**Bootstrap 95% confidence interval for the mean.** Draw $B = 5000$ resamples $x^{*(b)}$ of size $n$ with replacement (`numpy` generator, seed 42) and compute $\bar{x}^{*(b)}$ for each. The interval is the percentile interval:
-
-$$
-\mathrm{CI}_{95\%} = \left[\, Q_{0.025}\big(\bar{x}^{*(1)},\dots,\bar{x}^{*(B)}\big),\;
-Q_{0.975}\big(\bar{x}^{*(1)},\dots,\bar{x}^{*(B)}\big) \,\right]
-$$
-
-**Guardrail — missing-record rate:**
-
-$$
-M = \frac{N_{\text{missing}}}{N_{\text{input}}} \times 100\%
-$$
+Records with negative counts, or with invitations or offers exceeding applications, are excluded as invalid.
 
 ## 6. Data flow and reproducibility
 
@@ -121,7 +96,7 @@ All stochastic steps use seed 42.
 
 ## 7. Limitations
 
-- Eight synthetic records: percentiles (especially $p_{99}$) and confidence intervals are illustrative only.
+- Eight synthetic records: percentiles (especially p99) and confidence intervals are illustrative only.
 - The analysis is descriptive and exploratory; the internship comparison does not establish causation.
 - The current data are survey-style counts, not timed measurements, so the warm-up/benchmark split used in latency studies does not apply to this dataset.
 - Results cannot be generalized to the IT student population.
