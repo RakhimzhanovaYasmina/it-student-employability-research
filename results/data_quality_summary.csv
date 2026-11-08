@@ -1,0 +1,2 @@
+records_analyzed,records_with_missing_metric_values,missing_metric_record_rate_pct,records_with_negative_values,records_with_interviews_exceeding_applications,records_with_offers_exceeding_applications,data_type,interpretation
+8,0,0.0,0,0,0,synthetic_demo,Demonstration only; do not generalize to the student population.

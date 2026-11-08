@@ -1,1 +1,8 @@
+
 PyYAML==6.0.3
+pandas==3.1.0
+numpy==2.5.4
+matplotlib
+seaborn
+jupyter
+nbformat

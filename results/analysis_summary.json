@@ -1,0 +1,36 @@
+{
+  "data_type": "synthetic_demo",
+  "records_total": 8,
+  "records_analyzed": 8,
+  "records_with_missing_values": 0,
+  "missing_record_rate_percent": 0.0,
+  "missing_values": 0,
+  "invalid_records": 0,
+  "total_applications": 138,
+  "total_interview_invitations": 22,
+  "total_job_offers": 6,
+  "interview_invitation_rate": 0.1594,
+  "job_offer_rate_per_application": 0.0435,
+  "average_interview_invitations": 2.75,
+  "baseline_internship_yes_vs_no": {
+    "yes": {
+      "students": 4,
+      "total_applications": 76,
+      "total_interview_invitations": 16,
+      "interview_invitation_rate": 0.2105,
+      "average_interview_invitations": 4.0,
+      "students_with_job_offers": 4,
+      "job_offer_rate_per_application": 0.0658
+    },
+    "no": {
+      "students": 4,
+      "total_applications": 62,
+      "total_interview_invitations": 6,
+      "interview_invitation_rate": 0.0968,
+      "average_interview_invitations": 1.5,
+      "students_with_job_offers": 1,
+      "job_offer_rate_per_application": 0.0161
+    }
+  },
+  "interpretation": "Synthetic demonstration data only. Results test pipeline execution and do not confirm or reject research hypotheses."
+}

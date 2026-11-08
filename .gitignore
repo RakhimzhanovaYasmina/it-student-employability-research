@@ -1,38 +1,54 @@
 
-# Python cache
+# ==============================
+# Python cache and compiled files
+# ==============================
 __pycache__/
 *.py[cod]
 *$py.class
 
+# ==============================
 # Virtual environments
+# ==============================
 .venv/
 venv/
 env/
 
+# ==============================
 # Jupyter temporary files
+# ==============================
 .ipynb_checkpoints/
 
+# ==============================
 # Logs and temporary files
+# ==============================
 *.log
 logs/
 tmp/
 temp/
 
+# ==============================
 # Environment secrets
+# ==============================
 .env
 .env.*
 
+# ==============================
 # OS and editor files
+# ==============================
 .DS_Store
 Thumbs.db
 .vscode/
 
+# ==============================
 # Generated analysis output
-results/
+# Keep results in Git when required for reproducibility
+# ==============================
+# results/
 
+# ==============================
 # Local datasets and binary artifacts
+# ==============================
 data/raw/
-data/processed/
 *.parquet
 *.pkl
 *.pickle
@@ -42,3 +58,9 @@ data/processed/
 *.onnx
 *.h5
 *.model
+
+# ==============================
+# Keep processed research data tracked
+# ==============================
+!data/processed/
+!data/processed/metrics_summary.csv
