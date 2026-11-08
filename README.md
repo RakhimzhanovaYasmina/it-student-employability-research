@@ -116,13 +116,13 @@ Vector version: [PDF](reports/figures/fig1_internship_comparison.pdf)
 
 **Figure 2. Distribution of employment outcome rates**
 
-Distributions of interview invitation rates and job offer rates per application, with individual records, median, and mean.
+Distributions of interview invitation rates and job offer rates per application, with individual records, median, interquartile range, and the mean with its bootstrap 95% confidence interval.
 
 ![Figure 2. Distribution of employment outcome rates](reports/figures/fig2_rate_distributions.png)
 
 Vector version: [PDF](reports/figures/fig2_rate_distributions.pdf)
 
-Both figures are exported as PNG at 300 DPI and as PDF.
+Both figures are exported as PNG at 300 DPI and as vector PDF. They use a colorblind-safe palette, and groups differ by marker, hatch, and line style as well as by colour, so they remain readable in black-and-white print.
 
 ### 6.4 Data quality
 
