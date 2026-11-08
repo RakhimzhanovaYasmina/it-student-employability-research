@@ -1,103 +1,127 @@
 # Domain Model — IT Student Employability Research
 
-## 1. Purpose
+## 1. Purpose and scope
 
-This domain model describes the research pipeline used to analyze factors associated with the employability of IT students with little or no professional work experience.
+This document formalizes the research pipeline that analyzes factors associated with the employability of IT students with little or no professional work experience. Specialization: **Software Engineering (SE)** — the artifact is a C4 container diagram with the measurement nodes marked explicitly.
 
-The pipeline loads a synthetic student dataset, validates its records, calculates employment-related metrics, compares internship groups, and saves research results.
+The model describes a local, script-based data-analysis pipeline. It is not a deployed online application. The threat model for the same components is in [`security_analysis.md`](security_analysis.md).
 
-**Data limitation:** The current dataset contains eight synthetic demonstration records. It does not represent a real student survey or measured employment outcomes.
+**Data limitation:** the current dataset (`data/sample/sample.csv`) contains eight synthetic demonstration records. All metrics below test the pipeline; they are not empirical evidence about real students.
 
-## 2. C4-Style Container Diagram
+## 2. C4 container diagram
+
+Nodes marked **[M1]–[M5]** are the measurement nodes where metrics are produced (see section 3).
 
 ```mermaid
 C4Container
     title IT Student Employability Research Pipeline
 
-    Person(researcher, "Researcher", "Runs the research pipeline and interprets results")
+    Person(researcher, "Researcher", "Runs the scripts, opens the notebook, interprets results")
 
     System_Boundary(pipeline, "Research Pipeline") {
-        Container(config, "Configuration", "YAML", "Defines input/output paths, variables, metrics and analysis settings")
-        Container(sample, "Sample Dataset", "CSV", "Contains synthetic student characteristics and employment-related outcomes")
-        Container(benchmark, "Research Pipeline", "Python: src/benchmark.py", "Loads data, validates records, calculates metrics and compares internship groups")
-        Container(output, "Analysis Results", "JSON", "Stores aggregated metrics, data-quality indicators and group comparisons")
+        Container(config, "Configuration", "YAML: configs/config.yaml", "Paths, variables, metrics, guardrails, random seed 42")
+        ContainerDb(sample, "Sample Dataset", "CSV: data/sample/sample.csv", "Synthetic student records")
+
+        Container(process, "Data Processing [M1]", "Python: src/process_data.py", "Validates columns and counts, removes invalid records, computes per-student rates")
+        ContainerDb(processed, "Processed Metrics", "CSV: data/processed/metrics_summary.csv", "Student-level rates plus OVERALL row")
+
+        Container(stats, "Statistical Analysis [M2, M3]", "Python: src/statistical_analysis.py", "Mean, median, p95, p99, SD, bootstrap 95% CI, data-quality guardrails")
+        Container(bench, "Baseline Comparison [M4]", "Python: src/benchmark.py", "Internship yes vs no, aggregate indicators")
+        ContainerDb(results, "Analysis Results", "CSV/JSON: results/", "statistical_summary.csv, data_quality_summary.csv, analysis_summary.json")
+
+        Container(viz, "Visualization [M5]", "Python: src/visualize.py", "Figures with 95% CI, exported as PNG 300 DPI and PDF")
+        ContainerDb(figures, "Figures", "PNG, PDF: reports/figures/", "fig1_internship_comparison, fig2_rate_distributions")
+        Container(nb, "Analysis Notebook", "Jupyter: notebooks/01_data_analysis.ipynb", "Reproducible walk-through of the same steps")
     }
 
-    Rel(researcher, config, "Configures the analysis")
-    Rel(researcher, sample, "Provides or selects the dataset")
-    Rel(config, benchmark, "Provides configuration")
-    Rel(sample, benchmark, "Provides student records")
-    Rel(benchmark, output, "Writes analysis results")
-    Rel(output, researcher, "Provides results for interpretation")
+    Rel(researcher, config, "Edits")
+    Rel(researcher, sample, "Provides dataset")
+    Rel(config, bench, "Settings, seed")
+    Rel(sample, process, "Reads")
+    Rel(sample, bench, "Reads")
+    Rel(process, processed, "Writes")
+    Rel(processed, stats, "Reads")
+    Rel(processed, viz, "Reads")
+    Rel(processed, nb, "Reads")
+    Rel(stats, results, "Writes")
+    Rel(bench, results, "Writes")
+    Rel(viz, figures, "Writes")
+    Rel(nb, figures, "Writes")
+    Rel(results, researcher, "Interpreted by")
+    Rel(figures, researcher, "Interpreted by")
 ```
 
-## 3. Metric Collection Points
+## 3. Measurement nodes
 
-| Collection point | Variables or metrics | Purpose |
+| Node | Container | Metrics produced | Output |
+|---|---|---|---|
+| M1 | Data Processing | Interview invitation rate, job offer rate per application (per student); number of excluded records | `data/processed/metrics_summary.csv` |
+| M2 | Statistical Analysis | Mean, median, p95, p99, SD (n−1), bootstrap 95% CI of the mean | `results/statistical_summary.csv` |
+| M3 | Statistical Analysis | **Guardrail metrics:** records with missing values, negative counts, invitations > applications, offers > applications | `results/data_quality_summary.csv` |
+| M4 | Baseline Comparison | Group rates for internship = yes vs no (baseline comparison) | `results/analysis_summary.json` |
+| M5 | Visualization | Group means with bootstrap 95% CI, distributions with median and IQR | `reports/figures/*.png`, `*.pdf` |
+
+## 4. Entities and variables
+
+| Entity | Fields | Role |
 |---|---|---|
-| Input dataset | Professional experience, academic projects, internship, technical skills, communication skills | Describes student characteristics |
-| Application outcomes | Applications sent, interview invitations, job offers | Provides synthetic employment-related outcome counts |
-| Data validation | Missing values, missing records, invalid records | Checks input data quality |
-| Data quality analysis | Missing record rate, eligible sample size | Describes completeness of the dataset |
-| Outcome analysis | Interview invitation rate, job offer rate per application | Calculates employment-related outcome measures |
-| Group comparison | Internship yes vs no | Supports exploratory comparison between groups |
+| Student record | `student_id`, `professional_experience`, `academic_projects`, `internship`, `technical_skills`, `communication_skills` | Independent variables |
+| Application outcomes | `applications_sent`, `interview_invitations`, `job_offers` | Counts; applications are the exposure denominator |
+| Derived metric | `interview_invitation_rate`, `job_offer_rate_per_application` | Primary and secondary metrics |
+| Guardrail | missing-value rate, invalid-record counts | Data-quality checks |
 
-## 4. Main Derived Metrics
+Primary metric: `interview_invitation_rate`. Secondary: `job_offer_rate_per_application`.
 
-Let:
+## 5. Formal definitions
 
-- \(A_i\) be the number of applications sent by student \(i\).
-- \(I_i\) be the number of interview invitations received by student \(i\).
-- \(O_i\) be the number of job offers received by student \(i\).
+For student $i$ let $A_i$ be the number of applications, $I_i$ the interview invitations and $O_i$ the job offers, with $0 \le I_i \le A_i$ and $0 \le O_i \le A_i$. Records that violate this are excluded. For $A_i > 0$:
 
-For records where \(A_i > 0\), the interview invitation rate is:
+$$
+R_{I,i} = \frac{I_i}{A_i}, \qquad R_{O,i} = \frac{O_i}{A_i}
+$$
 
-\[
-R_{I,i} = \frac{I_i}{A_i}
-\]
+Overall (pooled) rates over the $N$ valid records:
 
-The overall interview invitation rate is calculated as:
+$$
+R_I = \frac{\sum_{i=1}^{N} I_i}{\sum_{i=1}^{N} A_i}, \qquad
+R_O = \frac{\sum_{i=1}^{N} O_i}{\sum_{i=1}^{N} A_i}
+$$
 
-\[
-R_I = \frac{\sum_i I_i}{\sum_i A_i}
-\]
+Sample mean and standard deviation of a metric $x_1,\dots,x_n$:
 
-The job offer rate per application is:
+$$
+\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i, \qquad
+s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\bar{x})^2}
+$$
 
-\[
-R_O = \frac{\sum_i O_i}{\sum_i A_i}
-\]
+Percentiles $p_{95}$ and $p_{99}$ are the 95th and 99th sample percentiles (linear interpolation), and the median is $p_{50}$.
 
-The missing record rate is:
+**Bootstrap 95% confidence interval for the mean.** Draw $B = 5000$ resamples $x^{*(b)}$ of size $n$ with replacement (`numpy` generator, seed 42) and compute $\bar{x}^{*(b)}$ for each. The interval is the percentile interval:
 
-\[
-M = \frac{N_{\text{records with missing values}}}{N_{\text{input records}}}\times 100\%
-\]
+$$
+\mathrm{CI}_{95\%} = \left[\, Q_{0.025}\big(\bar{x}^{*(1)},\dots,\bar{x}^{*(B)}\big),\;
+Q_{0.975}\big(\bar{x}^{*(1)},\dots,\bar{x}^{*(B)}\big) \,\right]
+$$
 
-The pipeline also calculates the average number of interview invitations per valid student record.
+**Guardrail — missing-record rate:**
 
-These metrics describe synthetic demonstration data only. They do not establish causal relationships between student characteristics and employment outcomes.
+$$
+M = \frac{N_{\text{missing}}}{N_{\text{input}}} \times 100\%
+$$
 
-## 5. Data Flow and Reproducibility
+## 6. Data flow and reproducibility
 
-1. Load project settings from `configs/config.yaml`.
-2. Read the input CSV file specified by `data.input_path`.
-3. Validate required columns, categorical values, integer counts, skill ratings, and consistency of application outcomes.
-4. Exclude incomplete or invalid records from the main analysis.
-5. Calculate missing-value indicators and derived employment metrics.
-6. Compare students with and without internship experience.
-7. Save the aggregated results as JSON to the configured `data.output_path`.
+1. `configs/config.yaml` defines paths, variables, metrics and the seed.
+2. `src/process_data.py` reads `data/sample/sample.csv`, validates it and writes `data/processed/metrics_summary.csv`.
+3. `src/statistical_analysis.py` reads the processed file and writes `results/statistical_summary.csv` and `results/data_quality_summary.csv`.
+4. `src/benchmark.py` writes `results/analysis_summary.json` (internship yes vs no).
+5. `src/visualize.py` and the notebook write the figures to `reports/figures/`.
 
-The main processing entry point is `src/benchmark.py`. The configuration defines the random seed, variables, primary and secondary metrics, guardrails, and exploratory comparison settings.
+All stochastic steps use seed 42.
 
-The current script does not implement latency or throughput benchmarking. Its output is a research summary for synthetic student employability data.
+## 7. Limitations
 
-## 6. Scope and Limitations
-
-- The model describes a local research and data-analysis pipeline, not a deployed online application.
-- The current sample contains eight synthetic records.
-- The analysis is descriptive and exploratory.
-- The internship comparison does not establish causation.
-- Results cannot be generalized to the broader IT student population.
-- The current implementation validates records and calculates aggregate metrics; it does not itself implement p95/p99 latency statistics or bootstrap confidence intervals.
-- The diagram represents the implemented configuration, input, processing, and output components.
+- Eight synthetic records: percentiles (especially $p_{99}$) and confidence intervals are illustrative only.
+- The analysis is descriptive and exploratory; the internship comparison does not establish causation.
+- The current data are survey-style counts, not timed measurements, so the warm-up/benchmark split used in latency studies does not apply to this dataset.
+- Results cannot be generalized to the IT student population.

@@ -2,33 +2,44 @@
 
 ## 1. Purpose
 
-This document identifies potential security threats in the IT Student Employability Research project using the STRIDE threat-modeling framework.
+This document identifies potential security threats in the IT Student Employability Research project using the STRIDE threat-modeling framework. It covers the same components as the C4 diagram in [`domain_model.md`](domain_model.md).
 
-The project is a local Python-based research pipeline. It reads a synthetic student dataset from a CSV file, loads configuration from YAML, validates records, calculates research metrics, and saves aggregated results as JSON.
+The project is a local Python-based research pipeline. It reads a synthetic student dataset from a CSV file, loads configuration from YAML, validates records, calculates research metrics, generates figures, and saves results as CSV, JSON, PNG, and PDF files.
 
 The current implementation does not include a web server, database, authentication service, or network API.
 
 ## 2. System Scope
 
-The security analysis covers the following components:
-
-| Component | Description |
-|---|---|
-| `configs/config.yaml` | Stores project configuration, input and output paths, variables, and metric settings |
-| `data/sample/sample.csv` | Contains synthetic student demonstration records |
-| `src/benchmark.py` | Loads configuration and data, validates records, calculates metrics, and generates results |
-| `results/analysis_summary.json` | Stores aggregated analysis results |
+| ID | Component | Description | Domain model node |
+|---|---|---|---|
+| C1 | `configs/config.yaml` | Project configuration: paths, variables, metric settings, random seed | Configuration |
+| C2 | `data/sample/sample.csv` | Synthetic student demonstration records (input) | Sample Dataset |
+| C3 | `src/process_data.py` | Validates records, removes invalid ones, computes per-student rates | Data Processing (M1) |
+| C4 | `data/processed/metrics_summary.csv` | Student-level rates and the OVERALL row | Processed Metrics |
+| C5 | `src/statistical_analysis.py` | Computes mean, median, p95, p99, SD, bootstrap 95% CI, data-quality checks | Statistical Analysis (M2, M3) |
+| C6 | `src/benchmark.py` | Loads configuration and data, validates records, compares internship groups | Baseline Comparison (M4) |
+| C7 | `results/` (`statistical_summary.csv`, `data_quality_summary.csv`, `analysis_summary.json`) | Aggregated analysis results | Analysis Results |
+| C8 | `src/visualize.py` | Generates figures from processed data | Visualization (M5) |
+| C9 | `reports/figures/` | Exported PNG and PDF figures | Figures |
+| C10 | `notebooks/01_data_analysis.ipynb` | Jupyter notebook that repeats the analysis and exports figures and results | Analysis Notebook |
+| C11 | `requirements.txt` and the Python environment | Third-party packages used by scripts and notebook | — |
 
 ## 3. STRIDE Threat Analysis
 
-| STRIDE category | Potential threat | Affected component | Mitigation |
+| STRIDE category | Potential threat | Affected components | Mitigation |
 |---|---|---|---|
-| Spoofing | An attacker replaces the expected input CSV with a file from an untrusted source | `data/sample/sample.csv` | Use trusted input sources and verify files before analysis |
-| Tampering | Input records or configuration values are modified without authorization | CSV and YAML files | Restrict write access, review changes through Git, and validate input values |
-| Repudiation | A previous analysis run or file modification cannot be reliably traced | Research pipeline and Git history | Keep version-controlled source files and document analysis runs |
-| Information Disclosure | Research outputs or files are accidentally published or shared | `results/analysis_summary.json` and repository | Check files before publishing and avoid including personal or confidential information |
-| Denial of Service | An excessively large or malformed CSV file causes high memory consumption or prevents processing | `src/benchmark.py` | Validate input files, limit dataset size, and handle parsing errors |
-| Elevation of Privilege | Untrusted code or unsafe dependencies are executed in the local environment | Python execution environment | Use trusted dependencies, review code changes, and avoid executing untrusted scripts |
+| Spoofing | The input CSV is replaced by a file from an untrusted source and treated as the genuine dataset | C2 | Use trusted input sources, review changes to the file in Git before analysis |
+| Spoofing | A package with a look-alike name or a tampered release is installed instead of the intended dependency | C11 | Install only from the official package index, keep versions pinned in `requirements.txt` |
+| Tampering | Input records or configuration values are modified without authorization, changing the results | C1, C2, C4 | Restrict write access, review changes through Git, validate input values (already implemented) |
+| Tampering | Processed or result files are edited by hand so they no longer match the scripts' output | C4, C7, C9 | Regenerate outputs with the scripts, compare regenerated files with the committed ones |
+| Tampering | The notebook is saved with outputs that do not match its code | C10 | Run the notebook with Kernel → Restart & Run All before committing |
+| Repudiation | A previous analysis run or file modification cannot be reliably traced | C3, C5, C6, C8, C10 | Keep source files in Git, use fixed random seed 42, document runs in commit messages |
+| Information Disclosure | Real personal data are added to the dataset and published with the repository | C2, C4, C7 | Keep only synthetic or anonymized records, check files before pushing, keep `data/raw/` in `.gitignore` |
+| Information Disclosure | A notebook output, log, or error message exposes local file paths or other local details | C10, C3, C5 | Review notebook outputs before committing, avoid committing logs (`*.log` is ignored) |
+| Denial of Service | An excessively large or malformed CSV causes high memory use or stops processing | C3, C5, C6 | Validate input files, limit dataset size, handle parsing errors |
+| Denial of Service | A bootstrap run with a very large iteration count or data size blocks the analysis | C5, C8, C10 | Keep the iteration count fixed in code (5000) and the dataset size bounded |
+| Elevation of Privilege | Untrusted code or an unsafe dependency runs with the user's local rights | C11, C3, C5, C6, C8 | Use trusted dependencies, review code changes, do not run unreviewed scripts |
+| Elevation of Privilege | Opening an untrusted notebook executes code in the local environment | C10 | Open and run only notebooks from the project repository, review code cells first |
 
 ## 4. Risk Assessment
 
@@ -49,11 +60,14 @@ These ratings are preliminary assessments, not results of a formal security test
 
 The current implementation provides several basic protections:
 
-- Required CSV columns are checked before analysis.
-- Numeric fields are validated as non-negative integers.
-- Skill ratings are restricted to the range from 1 to 5.
-- Application outcome counts are checked for consistency.
+- Required CSV columns are checked before analysis (`process_data.py`, `benchmark.py`).
+- Records with missing or negative counts, or with invitations or offers exceeding applications, are excluded (`process_data.py`) or reported (`statistical_analysis.py`).
+- Duplicate or missing student IDs are removed (`process_data.py`).
+- Counts are validated as non-negative integers and skill ratings are restricted to 1–5 (`benchmark.py`).
 - YAML configuration is loaded using `yaml.safe_load`.
+- Random steps use a fixed seed (42), so results can be reproduced and compared.
+- Package versions are pinned in `requirements.txt`.
+- `.gitignore` excludes virtual environments, caches, notebook checkpoints, logs, secrets files (`.env`), and `data/raw/`.
 - The project uses Git for version control and change tracking.
 - The demonstration dataset contains synthetic records rather than real student personal data.
 
@@ -69,6 +83,6 @@ These controls improve input validation and reduce some risks, but they do not r
 
 ## 7. Conclusion
 
-The main security considerations for this project are protecting input and configuration files, ensuring data integrity, preventing accidental disclosure, and handling malformed or excessively large input files.
+The main security considerations for this project are protecting input and configuration files, ensuring data integrity, keeping dependencies trustworthy, preventing accidental disclosure, and handling malformed or excessively large input files.
 
-The STRIDE analysis is scoped to the components that exist in the current local Python research pipeline.
+The STRIDE analysis is scoped to the components that exist in the current local Python research pipeline and matches the containers in [`domain_model.md`](domain_model.md).
