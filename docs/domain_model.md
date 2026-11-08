@@ -4,7 +4,7 @@
 
 This domain model describes the research pipeline used to analyze factors associated with the employability of IT students with little or no professional work experience.
 
-The pipeline processes a sample dataset, calculates employment-related metrics, performs statistical analysis, and generates research visualizations.
+The pipeline loads a synthetic student dataset, validates its records, calculates employment-related metrics, compares internship groups, and saves research results.
 
 **Data limitation:** The current dataset contains eight synthetic demonstration records. It does not represent a real student survey or measured employment outcomes.
 
@@ -14,45 +14,33 @@ The pipeline processes a sample dataset, calculates employment-related metrics, 
 C4Container
     title IT Student Employability Research Pipeline
 
-    Person(researcher, "Researcher", "Runs the analysis and interprets the results")
+    Person(researcher, "Researcher", "Runs the research pipeline and interprets results")
 
     System_Boundary(pipeline, "Research Pipeline") {
-        Container(raw_data, "Sample Dataset", "CSV", "Contains student characteristics and employment-related outcomes")
-
-        Container(processing, "Data Processing", "Python: src/process_data.py", "Validates records and calculates derived employment metrics")
-
-        Container(processed_data, "Processed Metrics", "CSV", "Stores cleaned and derived metrics")
-
-        Container(statistics, "Statistical Analysis", "Python: src/statistical_analysis.py", "Calculates descriptive statistics and bootstrap confidence intervals")
-
-        Container(visualization, "Visualization", "Python: src/visualize.py", "Creates figures for employment outcome rates and internship comparisons")
-
-        Container(figures, "Research Figures", "PNG and PDF", "Stores exported research figures")
+        Container(config, "Configuration", "YAML", "Defines input/output paths, variables, metrics and analysis settings")
+        Container(sample, "Sample Dataset", "CSV", "Contains synthetic student characteristics and employment-related outcomes")
+        Container(benchmark, "Research Pipeline", "Python: src/benchmark.py", "Loads data, validates records, calculates metrics and compares internship groups")
+        Container(output, "Analysis Results", "JSON", "Stores aggregated metrics, data-quality indicators and group comparisons")
     }
 
-    Rel(researcher, raw_data, "Provides or selects the dataset")
-    Rel(raw_data, processing, "Reads student records")
-    Rel(processing, processed_data, "Writes validated and derived metrics")
-    Rel(processed_data, statistics, "Supplies metrics for statistical analysis")
-    Rel(processed_data, visualization, "Supplies data for plotting")
-    Rel(statistics, researcher, "Provides statistical summaries")
-    Rel(visualization, figures, "Exports figures")
-    Rel(figures, researcher, "Provides visual research results")
+    Rel(researcher, config, "Configures the analysis")
+    Rel(researcher, sample, "Provides or selects the dataset")
+    Rel(config, benchmark, "Provides configuration")
+    Rel(sample, benchmark, "Provides student records")
+    Rel(benchmark, output, "Writes analysis results")
+    Rel(output, researcher, "Provides results for interpretation")
 ```
 
 ## 3. Metric Collection Points
 
-The following points identify where research variables enter the pipeline and where derived metrics are calculated.
-
 | Collection point | Variables or metrics | Purpose |
 |---|---|---|
 | Input dataset | Professional experience, academic projects, internship, technical skills, communication skills | Describes student characteristics |
-| Application outcomes | Applications sent, interview invitations, job offers | Records employment-related outcomes in the synthetic dataset |
-| Data processing | Interview invitation rate, job offer rate per application | Derives comparable outcome measures |
-| Statistical analysis | Mean, median, p95, p99, standard deviation, bootstrap 95% confidence interval | Summarizes distributions and uncertainty |
-| Visualization | Outcome-rate distributions and internship-group comparison | Communicates analysis results |
-
-The source dataset contains eight synthetic student records. These records must not be interpreted as real observations.
+| Application outcomes | Applications sent, interview invitations, job offers | Provides synthetic employment-related outcome counts |
+| Data validation | Missing values, missing records, invalid records | Checks input data quality |
+| Data quality analysis | Missing record rate, eligible sample size | Describes completeness of the dataset |
+| Outcome analysis | Interview invitation rate, job offer rate per application | Calculates employment-related outcome measures |
+| Group comparison | Internship yes vs no | Supports exploratory comparison between groups |
 
 ## 4. Main Derived Metrics
 
@@ -65,32 +53,51 @@ Let:
 For records where \(A_i > 0\), the interview invitation rate is:
 
 \[
-R_{I,i} = \frac{I_i}{A_i}\times 100\%
+R_{I,i} = \frac{I_i}{A_i}
 \]
 
-For records where \(A_i > 0\), the job offer rate is:
+The overall interview invitation rate is calculated as:
 
 \[
-R_{O,i} = \frac{O_i}{A_i}\times 100\%
+R_I = \frac{\sum_i I_i}{\sum_i A_i}
 \]
 
-These rates describe the synthetic records only. They do not establish causal relationships between student characteristics and employment outcomes.
+The job offer rate per application is:
+
+\[
+R_O = \frac{\sum_i O_i}{\sum_i A_i}
+\]
+
+The missing record rate is:
+
+\[
+M = \frac{N_{\text{records with missing values}}}{N_{\text{input records}}}\times 100\%
+\]
+
+The pipeline also calculates the average number of interview invitations per valid student record.
+
+These metrics describe synthetic demonstration data only. They do not establish causal relationships between student characteristics and employment outcomes.
 
 ## 5. Data Flow and Reproducibility
 
-1. Load the sample CSV dataset.
-2. Validate records and calculate derived metrics.
-3. Save processed metrics to `data/processed/metrics_summary.csv`.
-4. Calculate descriptive statistics and bootstrap confidence intervals.
-5. Generate and export research figures.
-6. Review the outputs and document limitations.
+1. Load project settings from `configs/config.yaml`.
+2. Read the input CSV file specified by `data.input_path`.
+3. Validate required columns, categorical values, integer counts, skill ratings, and consistency of application outcomes.
+4. Exclude incomplete or invalid records from the main analysis.
+5. Calculate missing-value indicators and derived employment metrics.
+6. Compare students with and without internship experience.
+7. Save the aggregated results as JSON to the configured `data.output_path`.
 
-The Python scripts and Jupyter Notebook provide the reproducible analysis workflow.
+The main processing entry point is `src/benchmark.py`. The configuration defines the random seed, variables, primary and secondary metrics, guardrails, and exploratory comparison settings.
+
+The current script does not implement latency or throughput benchmarking. Its output is a research summary for synthetic student employability data.
 
 ## 6. Scope and Limitations
 
 - The model describes a local research and data-analysis pipeline, not a deployed online application.
 - The current sample contains eight synthetic records.
-- The analysis is descriptive and does not demonstrate causation.
-- Confidence intervals calculated from this small synthetic sample should not be interpreted as evidence about the broader IT student population.
-- The diagram identifies data inputs, processing components, analysis steps, and output artifacts.
+- The analysis is descriptive and exploratory.
+- The internship comparison does not establish causation.
+- Results cannot be generalized to the broader IT student population.
+- The current implementation validates records and calculates aggregate metrics; it does not itself implement p95/p99 latency statistics or bootstrap confidence intervals.
+- The diagram represents the implemented configuration, input, processing, and output components.
