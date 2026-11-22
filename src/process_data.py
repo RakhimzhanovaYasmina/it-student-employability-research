@@ -8,7 +8,7 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 # Input and output files.
-INPUT_FILE = PROJECT_ROOT / "data" / "sample" / "sample.csv"
+INPUT_FILE = PROJECT_ROOT / "data" / "survey" / "survey_clean.csv"
 OUTPUT_DIR = PROJECT_ROOT / "data" / "processed"
 OUTPUT_FILE = OUTPUT_DIR / "metrics_summary.csv"
 
@@ -76,6 +76,11 @@ def clean_data(data: pd.DataFrame) -> pd.DataFrame:
         cleaned["job_offers"]
         <= cleaned["applications_sent"]
     )
+    # An offer requires an interview invitation in this survey design.
+    valid &= (
+        cleaned["job_offers"]
+        <= cleaned["interview_invitations"]
+    )
 
     cleaned = cleaned.loc[valid].copy()
 
@@ -86,7 +91,8 @@ def calculate_metrics(data: pd.DataFrame) -> pd.DataFrame:
     """Calculate student-level and overall employability metrics."""
     result = data.copy()
 
-    # Avoid division by zero when a student sent no applications.
+    # Respondents with zero applications have an undefined rate (NaN); they
+    # are kept in the file but excluded from rate statistics downstream.
     applications = result["applications_sent"].replace(0, float("nan"))
 
     result["interview_invitation_rate"] = (
@@ -141,9 +147,10 @@ def main() -> None:
     print(f"Excluded records: {len(raw_data) - len(cleaned_data)}")
     print(f"Output saved to: {OUTPUT_FILE.relative_to(PROJECT_ROOT)}")
     print(
-        "NOTICE: The current sample contains synthetic demonstration "
-        "data, not real student survey results."
+        "Records without applications (rate undefined): "
+        f"{int((cleaned_data['applications_sent'] == 0).sum())}"
     )
+    print("Data source: anonymous Google Forms survey (real responses).")
 
 
 if __name__ == "__main__":

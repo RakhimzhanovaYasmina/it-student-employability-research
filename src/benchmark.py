@@ -208,8 +208,13 @@ def analyze(data):
             int(row["job_offers"]) for row in group
         )
 
+        applicants = [
+            row for row in group if int(row["applications_sent"]) > 0
+        ]
+
         internship_groups[status] = {
             "students": len(group),
+            "applicants_with_applications": len(applicants),
             "total_applications": group_applications,
             "total_interview_invitations": group_invitations,
             "interview_invitation_rate": (
@@ -220,6 +225,11 @@ def analyze(data):
             "average_interview_invitations": (
                 round(group_invitations / len(group), 2)
                 if group
+                else None
+            ),
+            "average_interview_invitations_per_applicant": (
+                round(group_invitations / len(applicants), 2)
+                if applicants
                 else None
             ),
             "students_with_job_offers": sum(
@@ -233,7 +243,7 @@ def analyze(data):
         }
 
     return {
-        "data_type": "synthetic_demo",
+        "data_type": "real_survey",
         "records_total": len(data),
         "records_analyzed": total_students,
         "records_with_missing_values": records_with_missing_values,
@@ -258,8 +268,8 @@ def analyze(data):
         ),
         "baseline_internship_yes_vs_no": internship_groups,
         "interpretation": (
-            "Synthetic demonstration data only. Results test pipeline "
-            "execution and do not confirm or reject research hypotheses."
+            "Exploratory analysis of a small convenience-sample survey. "
+            "Results are descriptive and do not establish causal effects."
         ),
     }
 
@@ -274,7 +284,7 @@ def main():
     results = analyze(data)
 
     results["data_type"] = config["project"].get(
-        "data_type", "synthetic_demo"
+        "data_type", "real_survey"
     )
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -303,7 +313,7 @@ def main():
         f"{results['job_offer_rate_per_application']}"
     )
     print(f"Output saved to: {output_path.relative_to(ROOT)}")
-    print("NOTICE: Results use synthetic demonstration data only.")
+    print("NOTICE: Real survey data (convenience sample); exploratory only.")
 
 
 if __name__ == "__main__":

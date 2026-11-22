@@ -1,36 +1,40 @@
 {
-  "data_type": "synthetic_demo",
-  "records_total": 8,
-  "records_analyzed": 8,
+  "data_type": "real_survey",
+  "records_total": 17,
+  "records_analyzed": 17,
   "records_with_missing_values": 0,
   "missing_record_rate_percent": 0.0,
   "missing_values": 0,
   "invalid_records": 0,
-  "total_applications": 138,
-  "total_interview_invitations": 22,
-  "total_job_offers": 6,
-  "interview_invitation_rate": 0.1594,
-  "job_offer_rate_per_application": 0.0435,
-  "average_interview_invitations": 2.75,
+  "total_applications": 65,
+  "total_interview_invitations": 20,
+  "total_job_offers": 12,
+  "interview_invitation_rate": 0.3077,
+  "job_offer_rate_per_application": 0.1846,
+  "average_interview_invitations": 1.18,
   "baseline_internship_yes_vs_no": {
     "yes": {
-      "students": 4,
-      "total_applications": 76,
-      "total_interview_invitations": 16,
-      "interview_invitation_rate": 0.2105,
-      "average_interview_invitations": 4.0,
-      "students_with_job_offers": 4,
-      "job_offer_rate_per_application": 0.0658
+      "students": 7,
+      "applicants_with_applications": 7,
+      "total_applications": 48,
+      "total_interview_invitations": 17,
+      "interview_invitation_rate": 0.3542,
+      "average_interview_invitations": 2.43,
+      "average_interview_invitations_per_applicant": 2.43,
+      "students_with_job_offers": 5,
+      "job_offer_rate_per_application": 0.2083
     },
     "no": {
-      "students": 4,
-      "total_applications": 62,
-      "total_interview_invitations": 6,
-      "interview_invitation_rate": 0.0968,
-      "average_interview_invitations": 1.5,
-      "students_with_job_offers": 1,
-      "job_offer_rate_per_application": 0.0161
+      "students": 10,
+      "applicants_with_applications": 4,
+      "total_applications": 17,
+      "total_interview_invitations": 3,
+      "interview_invitation_rate": 0.1765,
+      "average_interview_invitations": 0.3,
+      "average_interview_invitations_per_applicant": 0.75,
+      "students_with_job_offers": 2,
+      "job_offer_rate_per_application": 0.1176
     }
   },
-  "interpretation": "Synthetic demonstration data only. Results test pipeline execution and do not confirm or reject research hypotheses."
+  "interpretation": "Exploratory analysis of a small convenience-sample survey. Results are descriptive and do not establish causal effects."
 }

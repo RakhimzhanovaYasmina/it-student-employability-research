@@ -110,6 +110,15 @@ def summarize_data_quality(data):
         (numeric["job_offers"] > numeric["applications_sent"])
         .fillna(False).sum()
     )
+    invalid_offers_vs_interviews = int(
+        (numeric["job_offers"] > numeric["interview_invitations"])
+        .fillna(False).sum()
+    )
+    zero_applications = int((numeric["applications_sent"] == 0).sum())
+    more_than_three_barriers = (
+        int((data["barriers"].str.count(";") + 1 > 3).sum())
+        if "barriers" in data.columns else 0
+    )
 
     quality = pd.DataFrame([{
         "records_analyzed": total_records,
@@ -121,9 +130,15 @@ def summarize_data_quality(data):
         "records_with_negative_values": invalid_negative,
         "records_with_interviews_exceeding_applications": invalid_interviews,
         "records_with_offers_exceeding_applications": invalid_offers,
-        "data_type": "synthetic_demo",
+        "records_with_offers_exceeding_interviews": (
+            invalid_offers_vs_interviews
+        ),
+        "records_with_zero_applications_rate_undefined": zero_applications,
+        "records_selecting_more_than_3_barriers": more_than_three_barriers,
+        "data_type": "real_survey",
         "interpretation": (
-            "Demonstration only; do not generalize to the student population."
+            "Anonymous convenience-sample survey; exploratory, "
+            "not representative of the IT student population."
         ),
     }])
 
@@ -149,7 +164,7 @@ def main():
     print(summary.to_string(index=False))
     print("\nData quality:")
     print(quality.to_string(index=False))
-    print("\nNOTICE: All results use synthetic demonstration data.")
+    print("\nNOTICE: Real survey data (convenience sample); exploratory only.")
 
 
 if __name__ == "__main__":
