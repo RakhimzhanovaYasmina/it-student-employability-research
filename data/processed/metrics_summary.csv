@@ -1,10 +1,19 @@
-student_id,professional_experience,academic_projects,internship,technical_skills,communication_skills,applications_sent,interview_invitations,job_offers,interview_invitation_rate,job_offer_rate_per_application
-S01,no,2,no,3,4,12,1,0,0.08333333333333333,0.0
-S02,no,4,yes,4,4,20,4,1,0.2,0.05
-S03,yes,3,yes,4,3,15,3,1,0.2,0.06666666666666667
-S04,no,1,no,2,3,18,0,0,0.0,0.0
-S05,yes,5,yes,5,4,25,6,2,0.24,0.08
-S06,no,3,no,3,2,10,1,0,0.1,0.0
-S07,no,2,yes,4,5,16,3,1,0.1875,0.0625
-S08,yes,4,no,4,3,22,4,1,0.18181818181818182,0.045454545454545456
-OVERALL,,,,,,138,22,6,0.15942028985507245,0.043478260869565216
+student_id,study_year,track,professional_experience,academic_projects,internship,technical_skills,communication_skills,applications_sent,interview_invitations,job_offers,working_in_it,perceived_difficulty,barriers,interview_invitation_rate,job_offer_rate_per_application
+S01,3,Other IT,no,10,no,1,3,3,1,1,no_searching,3,No professional experience;Insufficient technical skills;No response from employers,0.3333333333333333,0.3333333333333333
+S02,3,Other IT,no,0,no,1,1,0,0,0,no_not_searching,5,No professional experience;Insufficient technical skills;Insufficient communication skills;Few suitable vacancies;No portfolio / projects,,
+S03,3,Networks and infrastructure,yes,5,no,3,4,8,2,1,yes_part_time_or_internship,4,No professional experience;Insufficient technical skills;No portfolio / projects,0.25,0.125
+S04,3,Other IT,no,3,no,3,4,0,0,0,no_searching,4,No professional experience;Insufficient technical skills,,
+S05,3,Cybersecurity,no,10,no,3,5,2,0,0,no_not_searching,3,No professional experience;Insufficient technical skills;Insufficient communication skills;Few suitable vacancies;No portfolio / projects,0.0,0.0
+S06,4,Data / AI,yes,4,yes,4,4,6,4,3,yes_part_time_or_internship,3,Insufficient communication skills;Few suitable vacancies,0.6666666666666666,0.5
+S07,3,Other IT,no,0,no,2,5,0,0,0,no_not_searching,5,No professional experience;Insufficient technical skills;Few suitable vacancies;No response from employers;No portfolio / projects,,
+S08,2,Other IT,no,1,no,1,3,0,0,0,no_not_searching,3,Insufficient technical skills;Insufficient communication skills;No portfolio / projects,,
+S09,3,Data / AI,no,3,no,3,4,4,0,0,no_searching,5,No professional experience;No response from employers;No portfolio / projects,0.0,0.0
+S10,3,Cybersecurity,yes,1,yes,1,2,2,0,0,no_searching,3,No professional experience;Insufficient technical skills;No response from employers,0.0,0.0
+S11,3,Other IT,yes,3,no,3,3,0,0,0,no_not_searching,3,No professional experience;Insufficient communication skills;Language barrier,,
+S12,4,Cybersecurity,yes,8,yes,4,3,15,4,2,yes_part_time_or_internship,4,No professional experience;Insufficient technical skills,0.26666666666666666,0.13333333333333333
+S13,3,Cybersecurity,no,0,no,2,4,0,0,0,no_searching,5,No professional experience;Insufficient technical skills;No portfolio / projects,,
+S14,4,Cybersecurity,yes,8,yes,4,3,8,2,2,yes_part_time_or_internship,4,No professional experience;Insufficient technical skills;No portfolio / projects,0.25,0.25
+S15,3,Data / AI,no,2,yes,3,2,5,2,0,no_searching,4,No professional experience;Few suitable vacancies;No portfolio / projects,0.4,0.0
+S16,4,Software development,yes,10,yes,3,4,5,1,1,no_searching,4,No portfolio / projects,0.2,0.2
+S17,4,Cybersecurity,no,3,yes,5,2,7,4,2,yes_part_time_or_internship,3,Insufficient communication skills;Few suitable vacancies;Language barrier,0.5714285714285714,0.2857142857142857
+OVERALL,,,,,,,,65,20,12,,,,0.3076923076923077,0.18461538461538463

@@ -216,7 +216,7 @@ def plot_internship_comparison(data):
     ax.set_xlabel("Internship experience")
     ax.set_title(
         "Interview Invitation Rate by Internship Status\n"
-        "Synthetic demonstration data"
+        "Survey data, students with at least one application"
     )
     ax.grid(axis="y", linestyle="--", alpha=0.35)
     ax.legend(handles=legend_handles, loc="lower right", frameon=True)
@@ -323,12 +323,107 @@ def plot_rate_distributions(data):
     ax.set_xlabel("Employment outcome")
     ax.set_title(
         "Distribution of Student Employment Outcome Rates\n"
-        "Synthetic demonstration data"
+        "Survey data, students with at least one application"
     )
     ax.grid(axis="y", linestyle="--", alpha=0.35)
     fig.tight_layout()
 
     save_figure(fig, "fig2_rate_distributions")
+
+
+PAPER_DIR = PROJECT_ROOT / "paper" / "figures"
+BARRIERS_FILE = PROJECT_ROOT / "results" / "barriers_summary.csv"
+
+
+def plot_paper_figure(data):
+    """Three-panel full-width figure for the IEEE paper (vector PDF).
+
+    (a) interview rate by internship status, (b) interview rate against
+    technical-skill rating, (c) perceived barriers (share of 17 respondents).
+    Groups differ by marker/hatch as well as colour for black-and-white print.
+    """
+    rng = np.random.default_rng(RANDOM_SEED)
+    students = pd.read_csv(PROJECT_ROOT / "data" / "survey" / "survey_clean.csv")
+    barriers = pd.read_csv(BARRIERS_FILE)
+
+    plt.rcParams.update({"font.size": 7, "axes.labelsize": 7,
+                         "xtick.labelsize": 6.5, "ytick.labelsize": 6.5,
+                         "legend.fontsize": 6})
+    fig, axes = plt.subplots(
+        1, 3, figsize=(7.2, 2.35),
+        gridspec_kw={"width_ratios": [0.8, 0.95, 1.2]},
+    )
+
+    # (a) internship comparison
+    ax = axes[0]
+    for pos, key in enumerate(["no", "yes"], start=1):
+        style = GROUP_STYLES[key]
+        vals = data.loc[data["internship"] == key,
+                        "interview_invitation_rate"].dropna().to_numpy() * 100
+        jit = rng.uniform(-0.05, 0.05, len(vals))
+        ax.scatter(pos - 0.14 + jit, vals, marker=style["marker"], s=22,
+                   color=style["color"], edgecolor="black", linewidth=0.5,
+                   zorder=3)
+        _draw_mean_ci(ax, pos + 0.14, vals, rng, linestyle=style["linestyle"])
+    ns = [int((data["internship"] == k).sum() - data.loc[data["internship"] == k, "interview_invitation_rate"].isna().sum()) for k in ("no", "yes")]
+    ax.set_xticks([1, 2])
+    ax.set_xticklabels([f"No intern.\n(n={ns[0]})", f"Internship\n(n={ns[1]})"])
+    ax.set_xlim(0.4, 2.6)
+    ax.set_ylim(-4, 85)
+    ax.set_ylabel("Interview invitation rate (%)")
+    ax.set_title("(a) Internship status", fontsize=7)
+    ax.grid(axis="y", linestyle="--", alpha=0.35)
+
+    # (b) rate vs technical skills
+    ax = axes[1]
+    app = data.dropna(subset=["interview_invitation_rate"])
+    for key in ["no", "yes"]:
+        style = GROUP_STYLES[key]
+        sub = app[app["internship"] == key]
+        jit = rng.uniform(-0.07, 0.07, len(sub))
+        ax.scatter(sub["technical_skills"] + jit,
+                   sub["interview_invitation_rate"] * 100,
+                   marker=style["marker"], s=22, color=style["color"],
+                   edgecolor="black", linewidth=0.5, zorder=3,
+                   label=style["label"])
+    ax.set_xticks([1, 2, 3, 4, 5])
+    ax.set_xlim(0.6, 5.4)
+    ax.set_ylim(-4, 85)
+    ax.set_xlabel("Self-rated technical skills (1\u20135)")
+    ax.set_title("(b) Technical skills", fontsize=7)
+    ax.grid(linestyle="--", alpha=0.35)
+    ax.legend(loc="upper left", frameon=True, handletextpad=0.2,
+              borderpad=0.3)
+
+    # (c) barriers
+    ax = axes[2]
+    barriers = barriers.sort_values("n")
+    ypos = np.arange(len(barriers))
+    ax.barh(ypos, barriers["share_pct"], color=PALETTE[2], edgecolor="black",
+            hatch="//", linewidth=0.6, alpha=0.85)
+    for y, (_, row) in zip(ypos, barriers.iterrows()):
+        ax.text(row["share_pct"] + 1.5, y, f"{int(row['n'])}", va="center",
+                fontsize=6)
+    ax.set_yticks(ypos)
+    short = {
+        "No professional experience": "No prof. experience",
+        "Insufficient technical skills": "Weak technical skills",
+        "Insufficient communication skills": "Weak communication skills",
+        "No response from employers": "No employer response",
+    }
+    ax.set_yticklabels([short.get(b, b) for b in barriers["barrier"]])
+    ax.set_xlim(0, 100)
+    ax.set_xlabel("Respondents citing barrier (%, n = 17)")
+    ax.set_title("(c) Perceived barriers", fontsize=7)
+    ax.grid(axis="x", linestyle="--", alpha=0.35)
+
+    fig.subplots_adjust(left=0.07, right=0.995, bottom=0.2, top=0.9,
+                        wspace=0.9)
+    PAPER_DIR.mkdir(parents=True, exist_ok=True)
+    fig.savefig(PAPER_DIR / "fig_results.pdf", bbox_inches="tight")
+    fig.savefig(PAPER_DIR / "fig_results.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
+    plt.rcParams["font.size"] = 11
 
 
 def main():
@@ -337,14 +432,16 @@ def main():
     if data.empty:
         raise ValueError("No student records available for visualization.")
 
+    # Rates are undefined for students without applications.
     plot_internship_comparison(data)
     plot_rate_distributions(data)
+    plot_paper_figure(data)
 
     print("Visualization completed successfully.")
     print(f"Student records plotted: {len(data)}")
     print(f"Figures saved to: {FIGURES_DIR.relative_to(PROJECT_ROOT)}")
     print("Each figure was exported as PNG (300 DPI) and PDF.")
-    print("NOTICE: All plots use synthetic demonstration data.")
+    print("NOTICE: Plots use real survey data (convenience sample).")
 
 
 if __name__ == "__main__":
