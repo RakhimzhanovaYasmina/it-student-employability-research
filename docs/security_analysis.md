@@ -4,7 +4,7 @@
 
 This document identifies potential security threats in the IT Student Employability Research project using the STRIDE threat-modeling framework. It covers the same components as the C4 diagram in [`domain_model.md`](domain_model.md).
 
-The project is a local Python-based research pipeline. It reads a synthetic student dataset from a CSV file, loads configuration from YAML, validates records, calculates research metrics, generates figures, and saves results as CSV, JSON, PNG, and PDF files.
+The project is a local Python-based research pipeline. It reads a de-identified student survey dataset from a CSV file, loads configuration from YAML, validates records, calculates research metrics, generates figures, and saves results as CSV, JSON, PNG, and PDF files.
 
 The current implementation does not include a web server, database, authentication service, or network API.
 
@@ -13,7 +13,7 @@ The current implementation does not include a web server, database, authenticati
 | ID | Component | Description | Domain model node |
 |---|---|---|---|
 | C1 | `configs/config.yaml` | Project configuration: paths, variables, metric settings, random seed | Configuration |
-| C2 | `data/sample/sample.csv` | Synthetic student demonstration records (input) | Sample Dataset |
+| C2 | `data/survey/survey_clean.csv` | De-identified survey records (input) | Sample Dataset |
 | C3 | `src/process_data.py` | Validates records, removes invalid ones, computes per-student rates | Data Processing (M1) |
 | C4 | `data/processed/metrics_summary.csv` | Student-level rates and the OVERALL row | Processed Metrics |
 | C5 | `src/statistical_analysis.py` | Computes mean, median, p95, p99, SD, bootstrap 95% CI, data-quality checks | Statistical Analysis (M2, M3) |
@@ -69,7 +69,7 @@ The current implementation provides several basic protections:
 - Package versions are pinned in `requirements.txt`.
 - `.gitignore` excludes virtual environments, caches, notebook checkpoints, logs, secrets files (`.env`), and `data/raw/`.
 - The project uses Git for version control and change tracking.
-- The demonstration dataset contains synthetic records rather than real student personal data.
+- The published dataset is de-identified (no names, e-mails, institutions or timestamps); the raw export stays in git-ignored `data/raw/`. Re-identification from rare attribute combinations remains possible with n = 17.
 
 These controls improve input validation and reduce some risks, but they do not replace a full security audit.
 
@@ -78,7 +78,7 @@ These controls improve input validation and reduce some risks, but they do not r
 - The project is a local research pipeline, not a deployed web application.
 - No database, authentication mechanism, or network API is included in the current architecture.
 - The threat assessment is qualitative and has not been validated through penetration testing.
-- The dataset contains synthetic demonstration records.
+- The dataset is a small real survey sample.
 - Security controls depend partly on the local operating system, repository permissions, and user practices.
 
 ## 7. Conclusion

@@ -10,7 +10,9 @@ The research focuses on the role of professional experience, academic projects, 
 
 The repository provides a reproducible data-analysis workflow, including data validation, descriptive statistics, data-quality checks, a domain model, and scientific visualizations.
 
-**Data status:** The current dataset contains eight synthetic demonstration records. All results are preliminary pipeline-testing outputs, not empirical evidence about the student population.
+**Data status:** The analysis uses real responses from an anonymous Google Forms survey of IT students (17 respondents, 11 of whom had sent at least one application). The sample is a small convenience sample, so all results are exploratory and cannot be generalized to the student population. The earlier synthetic demonstration data were removed.
+
+A 4-page IEEE-format paper based on these results is in [`paper/`](paper/) (`main.tex`, `references.bib`, compiled `main.pdf`).
 
 ## 2. Research Questions
 
@@ -28,29 +30,26 @@ The following hypotheses are based on the earlier project work:
 
 The corresponding null hypotheses state that there is no association between the respective factors and employment-related outcomes.
 
-These hypotheses have **not been empirically tested** using real student data. The current synthetic dataset is insufficient to draw conclusions about the hypotheses.
+The hypotheses are tested exploratorily on the survey data (Section 6). With n = 17 none of the three primary tests is significant after Holm correction, so the data neither confirm nor reject H1-H3.
 
 ## 4. Dataset and Variables
 
-The demonstration dataset is stored in `data/sample/sample.csv`.
-
-It contains eight synthetic records and includes the following variables:
+The raw Google Forms export (Russian headers, with timestamps) is stored in `data/raw/` and is excluded from Git. `src/prepare_survey.py` converts it into the de-identified analysis file `data/survey/survey_clean.csv` (consent required, timestamps removed, identifiers S01-S17, answers translated to English).
 
 | Variable | Description |
 |---|---|
-| `student_id` | Synthetic record identifier |
-| `professional_experience` | Whether professional experience is reported |
-| `academic_projects` | Number of academic projects |
-| `internship` | Whether internship experience is reported |
-| `technical_skills` | Technical skills score |
-| `communication_skills` | Communication skills score |
-| `applications_sent` | Number of job applications |
-| `interview_invitations` | Number of interview invitations |
-| `job_offers` | Number of job offers |
+| `student_id` | Anonymous code |
+| `study_year`, `track` | Study year (2-4) and main track |
+| `professional_experience` | Professional IT experience (yes/no) |
+| `academic_projects` | Number of study or personal projects |
+| `internship` | Internship in an IT company (yes/no) |
+| `technical_skills`, `communication_skills` | Self-rated skills, 1-5 |
+| `applications_sent`, `interview_invitations`, `job_offers` | Job-search funnel counts |
+| `working_in_it` | Currently working in IT (part-time or internship) / searching / not searching |
+| `perceived_difficulty` | Perceived difficulty of a first IT job without experience, 1-5 |
+| `barriers` | Perceived barriers (multi-select, `;`-separated) |
 
-The records are artificial and do not represent actual students. They are used to validate the analysis pipeline and demonstrate the expected outputs.
-
-The directory `data/raw/` is excluded from Git (see `.gitignore`); only the small sample and the processed summary `data/processed/metrics_summary.csv` are committed.
+Rates are undefined for the 6 respondents with zero applications; they are excluded from rate statistics (not set to zero) and kept in the perception analyses.
 
 ## 5. Methodology
 
@@ -69,80 +68,59 @@ The bootstrap uses a fixed random seed (`42`) to make the calculations reproduci
 
 **Warm-up filtering.** The dataset consists of per-student survey-style counts, not timed benchmark runs, so there is no warm-up phase to discard. Data-quality guardrails (missing values, negative counts, invitations or offers exceeding applications) take the place of the warm-up filter.
 
-Because the dataset contains only eight synthetic records, the percentiles and confidence intervals are illustrative and should not be interpreted as reliable population estimates.
+Inferential steps (`src/inferential_analysis.py`): exact Mann-Whitney tests (permutation p-values with mid-ranks), Cliff's delta, Spearman correlation, Wilson intervals for pooled rates, bootstrap CI for the group difference, Fisher's exact test, leave-one-out sensitivity, and Holm correction for the three primary tests (H1-H3). All other tests are exploratory and unadjusted.
+
+With n = 17 (11 applicants) percentiles and intervals are imprecise; p95 and p99 are shown for completeness only.
 
 ## 6. Results & Discussion
 
-### 6.1 Descriptive statistics
+All numbers come from `results/` and are reproducible with the pipeline in Section 10.
 
-The following results were calculated from the eight synthetic demonstration records (source: `results/statistical_summary.csv`).
+### 6.1 Descriptive statistics (applicants only, n = 11)
 
-| Indicator | n | Mean ± SD | Median (p25–p75) | p95 | p99 | 95% bootstrap CI for mean |
-|---|---:|---:|---:|---:|---:|---:|
-| Interview invitation rate | 8 | 14.91% ± 8.01 | 18.47% (9.58–20.00) | 22.60% | 23.72% | 9.39%–19.87% |
-| Job offer rate per application | 8 | 3.81% ± 3.32 | 4.77% (0.00–6.35) | 7.53% | 7.91% | 1.63%–5.89% |
+| Indicator | n | Mean ± SD | Median | 95% bootstrap CI for mean |
+|---|---:|---:|---:|---:|
+| Interview invitation rate | 11 | 26.7% ± 22.2 | 25.0% | 14.3%-39.8% |
+| Job offer rate per application | 11 | 16.6% ± 16.6 | 13.3% | 7.6%-26.4% |
 
-**Definitions**
+Pooled over all applicants: 65 applications, 20 interview invitations (30.8%, Wilson 95% CI 20.9-42.8) and 12 offers (18.5%, 10.9-29.6).
 
-- **Interview invitation rate:** interview invitations divided by job applications for each record.
-- **Job offer rate per application:** job offers divided by job applications for each record.
-- **95% bootstrap confidence interval:** an interval estimated by resampling the available records to illustrate uncertainty in the sample mean.
-- With n = 8, p95 and p99 are interpolated between very few points and are shown for completeness only.
+### 6.2 Baseline (no internship) vs. internship
 
-### 6.2 Baseline vs. Proposed comparison
-
-The baseline group is students **without** internship experience; the compared group is students **with** internship experience. Values are per-student rates (n = 4 per group).
-
-| Indicator | Baseline: no internship | Proposed: internship |
+| Indicator | No internship (4 applicants) | Internship (7 applicants) |
 |---|---:|---:|
-| Interview invitation rate, Mean ± SD | 9.13% ± 7.45 | 20.69% ± 2.29 |
-| Interview invitation rate, Median (p25–p75) | 9.17% (6.25–12.05) | 20.00% (19.69–21.00) |
-| Job offer rate per application, Mean ± SD | 1.14% ± 2.27 | 6.48% ± 1.24 |
-| Job offer rate per application, Median (p25–p75) | 0.00% (0.00–1.14) | 6.46% (5.94–7.00) |
+| Pooled interview rate (Wilson 95% CI) | 17.6% (6.2-41.0) | 35.4% (23.4-49.6) |
+| Median student rate [IQR] | 12.5% [0.0-27.1] | 26.7% [22.5-48.6] |
+| Pooled offer rate | 11.8% (3.3-34.3) | 20.8% (11.7-34.3) |
+| Currently working in IT (of 10 / 7 respondents) | 1 | 4 |
 
-The pooled (applications-weighted) interview invitation rate is 9.68% without internship and 21.05% with internship (`results/analysis_summary.json`).
+Mean difference in interview rate 19.0 pp (bootstrap 95% CI -2.6 to 39.5); exact Mann-Whitney p = 0.242, Cliff's delta = 0.46.
 
-The comparison is exploratory. With four records per group it cannot establish that internships cause better outcomes, and the groups may differ in other variables.
+### 6.3 Hypothesis tests
 
-### 6.3 Scientific visualizations
+| Test | n | Effect | p | Holm p |
+|---|---:|---:|---:|---:|
+| H1: perceived difficulty, no experience vs experience | 17 | delta = 0.26 | 0.378 | 0.485 |
+| H2: interview rate, internship vs none | 11 | delta = 0.46 | 0.242 | 0.485 |
+| H3: technical skills vs interview rate | 11 | rho = 0.52 | 0.103 | 0.309 |
 
-**Figure 1. Interview invitation rate by internship status**
+Full list including exploratory tests: `results/tests_summary.csv`.
 
-Individual records and group means with bootstrap 95% confidence intervals.
+### 6.4 Perceived barriers (RQ1)
 
-![Figure 1. Interview invitation rate by internship status](reports/figures/fig1_internship_comparison.png)
+No professional experience 13/17 (76%), insufficient technical skills 11 (65%), no portfolio/projects 10 (59%), insufficient communication skills 6, few suitable vacancies 6, no employer response 4, language barrier 2. Median perceived difficulty is 4 of 5.
 
-Vector version: [PDF](reports/figures/fig1_internship_comparison.pdf)
+### 6.5 Figures
 
-**Figure 2. Distribution of employment outcome rates**
+Figures are produced by `src/visualize.py` (PNG 300 DPI and vector PDF): `reports/figures/fig1_internship_comparison`, `fig2_rate_distributions`, and the three-panel paper figure `paper/figures/fig_results`.
 
-Distributions of interview invitation rates and job offer rates per application, with individual records, median, interquartile range, and the mean with its bootstrap 95% confidence interval.
+### 6.6 Data quality
 
-![Figure 2. Distribution of employment outcome rates](reports/figures/fig2_rate_distributions.png)
+0 missing values, 0 negative counts, 0 records with invitations > applications or offers > invitations. Flags: 6 respondents with zero applications (rate undefined), 3 respondents selected more than the requested 3 barriers, 1 respondent who reports not searching but 2 applications. Flagged records were retained.
 
-Vector version: [PDF](reports/figures/fig2_rate_distributions.pdf)
+### 6.7 Interpretation
 
-Both figures are exported as PNG at 300 DPI and as vector PDF. They use a colorblind-safe palette, and groups differ by marker, hatch, and line style as well as by colour, so they remain readable in black-and-white print.
-
-### 6.4 Data quality
-
-The current eight-record demonstration dataset passed the implemented checks:
-
-| Data-quality check | Invalid records detected |
-|---|---:|
-| Negative applications | 0 |
-| Negative interview invitations | 0 |
-| Negative job offers | 0 |
-| Interview invitations exceeding applications | 0 |
-| Job offers exceeding applications | 0 |
-
-These checks confirm that the sample passes the implemented validation rules. They do not establish that the data are representative or that all possible data-quality problems have been eliminated.
-
-### 6.5 Interpretation
-
-The pipeline successfully demonstrates data processing, descriptive statistics, bootstrap confidence intervals, data-quality checks, and figure export.
-
-No conclusion about H1, H2, or H3 can be justified from these synthetic records. Testing the research hypotheses requires real, appropriately collected student data and a suitable statistical analysis.
+Results suggest, but do not demonstrate, a positive association of internship experience and technical skills with interview outcomes. The design can detect only very large effects (exact p < 0.05 requires |delta| >= 0.79 for 7 vs 4), so non-significance is not evidence of no effect.
 
 ## 7. Domain Model
 
@@ -152,11 +130,7 @@ The STRIDE threat model of the pipeline components is in [`docs/security_analysi
 
 ## 8. Baseline and Future Evaluation
 
-The current exploratory baseline compares interview invitation rates between records with and without internship experience.
-
-A future empirical evaluation should use a documented data-collection procedure and a sufficiently large sample of actual IT students. The analysis should define the outcome variables in advance, examine missing data, account for relevant confounding factors, and use statistical methods appropriate to the research questions and data.
-
-The current comparison is a pipeline demonstration, not a completed empirical evaluation.
+The baseline is the group without internship experience. A future evaluation should use a larger multi-institution sample with a documented sampling frame and pre-registered sample size, adjust for confounders (year, track, number of applications) with count regression, and validate self-rated skills against objective assessments.
 
 ## 9. Repository Structure
 
@@ -165,14 +139,17 @@ The current comparison is a pipeline demonstration, not a completed empirical ev
 ├── configs/
 │   └── config.yaml
 ├── data/
-│   ├── sample/
-│   │   └── sample.csv
+│   ├── survey/
+│   │   └── survey_clean.csv 
 │   └── processed/
 │       └── metrics_summary.csv
 ├── docs/
 │   ├── domain_model.md
 │   ├── methodology_passport.md
 │   └── security_analysis.md
+├── paper/
+│   ├── main.tex, references.bib, main.pdf
+│   └── figures/
 ├── notebooks/
 │   ├── 01_data_analysis.ipynb
 │   └── README.md
@@ -187,6 +164,8 @@ The current comparison is a pipeline demonstration, not a completed empirical ev
 │   ├── statistical_summary.csv
 │   └── data_quality_summary.csv
 ├── src/
+│   ├── prepare_survey.py
+│   ├── inferential_analysis.py
 │   ├── benchmark.py
 │   ├── process_data.py
 │   ├── statistical_analysis.py
@@ -200,7 +179,7 @@ The current comparison is a pipeline demonstration, not a completed empirical ev
 
 ## 10. Reproducibility
 
-The repository includes source scripts, a demonstration dataset, a configuration file, a Jupyter Notebook, and generated analysis outputs. All random steps use seed `42`.
+The repository includes source scripts, the de-identified survey dataset, a configuration file, a Jupyter Notebook, and generated analysis outputs. All random steps use seed `42`.
 
 Run everything from the repository root. Install the pinned dependencies:
 
@@ -211,10 +190,12 @@ python -m pip install -r requirements.txt
 Run the pipeline in this order:
 
 ```bash
-python src/process_data.py          # data/sample -> data/processed
+python src/prepare_survey.py        # data/raw -> data/survey (needs the raw export)
+python src/process_data.py          # data/survey -> data/processed
 python src/statistical_analysis.py  # statistics and data-quality summaries -> results/
 python src/benchmark.py             # internship comparison -> results/analysis_summary.json
-python src/visualize.py             # figures -> reports/figures/
+python src/inferential_analysis.py  # tests, barriers -> results/
+python src/visualize.py             # figures -> reports/figures/, paper/figures/
 ```
 
 Open the notebook and run it with **Kernel → Restart & Run All**:
@@ -223,19 +204,18 @@ Open the notebook and run it with **Kernel → Restart & Run All**:
 jupyter notebook notebooks/01_data_analysis.ipynb
 ```
 
-The current output files are retained in the repository to support inspection and reproducibility.
+Compile the paper (Overleaf or `cd paper && latexmk -pdf main.tex`). The current output files are retained in the repository to support inspection and reproducibility.
 
 ## 11. Limitations and Next Steps
 
 The main limitations are:
 
-- The current dataset contains only eight synthetic records.
-- The results cannot be generalized to the student population.
-- The analysis is descriptive and does not establish causality.
-- The research hypotheses have not been tested on empirical data.
-- The data-collection procedure and the suitability of the measures must be established before substantive conclusions can be drawn.
+- Small convenience sample (n = 17; 11 applicants), likely affected by self-selection; no generalization.
+- Observational design: no causal claims, no confounder adjustment.
+- Self-reported single-item measures; "internship" and "working in IT" overlap.
+- Low statistical power; Wilson intervals ignore clustering within students.
 
-The next steps are to collect suitable real-world data, extend the domain model if the pipeline changes, and conduct an appropriate empirical evaluation.
+Next steps: collect a larger, multi-institution sample and run a pre-registered, adjusted analysis.
 
 ## License
 

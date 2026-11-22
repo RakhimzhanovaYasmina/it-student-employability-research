@@ -1,11 +1,11 @@
 
 project:
   name: "IT Student Employability Research"
-  data_type: "synthetic_demo"
+  data_type: "real_survey"
   random_seed: 42
 
 data:
-  input_path: "data/sample/sample.csv"
+  input_path: "data/survey/survey_clean.csv"
   output_path: "results/analysis_summary.json"
 
 variables:
@@ -22,6 +22,10 @@ variables:
 
   exposure_denominator:
     - applications_sent
+
+  perception_variables:
+    - perceived_difficulty
+    - barriers
 
   potential_confounders:
     - professional_experience
@@ -43,7 +47,18 @@ metrics:
 
 baseline:
   comparison: "internship_yes_vs_no"
-  note: "Exploratory comparison using synthetic data only; no causal conclusions."
+  note: "Exploratory observational comparison on a small convenience sample (n = 17); no causal conclusions."
 
 analysis:
   alpha: 0.05
+
+survey:
+  raw_path: "data/raw/survey_raw_google_forms.csv"
+  clean_path: "data/survey/survey_clean.csv"
+  instrument: "Anonymous Google Form (consent required)"
+  bootstrap_iterations: 5000
+  primary_tests:
+    - "difficulty_vs_professional_experience"
+    - "interview_rate_internship_vs_none"
+    - "interview_rate_vs_technical_skills"
+  multiple_comparison_correction: "holm"

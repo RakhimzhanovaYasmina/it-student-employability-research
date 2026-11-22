@@ -1,0 +1,19 @@
+variable,category,n
+respondents,all,17
+study_year,3.0,11
+study_year,4.0,5
+study_year,2.0,1
+track,Other IT,6
+track,Cybersecurity,6
+track,Data / AI,3
+track,Networks and infrastructure,1
+track,Software development,1
+professional_experience,no,10
+professional_experience,yes,7
+internship,no,10
+internship,yes,7
+working_in_it,no_searching,7
+working_in_it,no_not_searching,5
+working_in_it,yes_part_time_or_internship,5
+with_applications,>0,11
+zero_applications,=0,6

@@ -1,0 +1,10 @@
+id,family,rq,test,n,statistic,p_raw,effect_name,effect,median_a,median_b,n_a,n_b,p_holm,mean_diff,mean_diff_ci_lo,mean_diff_ci_hi,table_yes_working,table_yes_not,table_no_working,table_no_not
+H1,primary,RQ1,"Mann-Whitney U (exact), difficulty: no experience vs experience",17,44.0,0.37767379679144386,Cliff's delta,0.2571428571428571,4.0,4.0,10.0,7.0,0.48484848484848486,,,,,,,
+H2,primary,RQ2,"Mann-Whitney U (exact), interview rate: internship vs none",11,20.5,0.24242424242424243,Cliff's delta,0.4642857142857143,0.2666666666666666,0.125,7.0,4.0,0.48484848484848486,0.1905612244897959,-0.026122448979591855,0.395329506802721,,,,
+H3,primary,RQ3,"Spearman rho, technical skills vs interview rate",11,0.5176894679358347,0.10287573378750929,Spearman rho,0.5176894679358347,,,,,0.30862720136252786,,,,,,,
+E1,exploratory,RQ3,"Spearman rho, communication_skills vs interview_invitation_rate",11,-0.3670849002201074,0.26677496014756646,Spearman rho,-0.3670849002201074,,,,,,,,,,,,
+E2,exploratory,RQ2,"Spearman rho, academic_projects vs interview_invitation_rate",11,-0.11421942452926165,0.7380813547439671,Spearman rho,-0.11421942452926165,,,,,,,,,,,,
+E3,exploratory,RQ3,"Spearman rho, technical_skills vs job_offer_rate_per_application",11,0.4373370968300496,0.17858477621024335,Spearman rho,0.4373370968300496,,,,,,,,,,,,
+E4,exploratory,RQ2,"Spearman rho, academic_projects vs job_offer_rate_per_application",11,0.3467135422417645,0.29621368239454127,Spearman rho,0.3467135422417645,,,,,,,,,,,,
+E5,exploratory,RQ2,"Mann-Whitney U (exact), offer rate: internship vs none",11,18.0,0.48484848484848486,Cliff's delta,0.2857142857142857,,,,,,,,,,,,
+E6,exploratory,RQ2,"Fisher exact, internship vs currently working in IT",17,12.0,0.10067873303167421,odds ratio,12.0,,,,,,,,,4.0,3.0,1.0,9.0
