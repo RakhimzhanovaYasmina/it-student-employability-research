@@ -6,9 +6,9 @@ This directory contains the Jupyter notebook used for the data analysis and scie
 
 | File | Description |
 |---|---|
-| `01_data_analysis.ipynb` | Ingests and validates `data/sample/sample.csv`, checks data quality (guardrails), computes descriptive statistics (mean, median, p95, p99, SD) and bootstrap 95% confidence intervals, creates the figures, and saves results. All calculations are imported from `src/`, so notebook and scripts always agree |
+| `01_data_analysis.ipynb` | Ingests and validates `data/survey/survey_clean.csv`, checks data quality (guardrails), computes descriptive statistics (mean, median, p95, p99, SD) and bootstrap 95% confidence intervals, creates the figures, and saves results. All calculations are imported from `src/`, so notebook and scripts always agree |
 
-The notebook works with the eight synthetic demonstration records. Its results are pipeline-testing outputs, not empirical evidence about the student population.
+The notebook works with the real survey data (17 respondents, 11 applicants). Results are exploratory and not representative of the student population.
 
 ## What the notebook writes
 

@@ -6,7 +6,7 @@ This document formalizes the research pipeline that analyzes factors associated 
 
 The model describes a local, script-based data-analysis pipeline. It is not a deployed online application. The threat model for the same components is in [`security_analysis.md`](security_analysis.md).
 
-**Data limitation:** the current dataset (`data/sample/sample.csv`) contains eight synthetic demonstration records. All metrics below test the pipeline; they are not empirical evidence about real students.
+**Data limitation:** the current dataset (`data/survey/survey_clean.csv`) holds 17 real, de-identified survey responses (convenience sample). Metrics are exploratory.
 
 ## 2. C4 container diagram
 
@@ -20,7 +20,7 @@ C4Container
 
     System_Boundary(pipeline, "Research Pipeline") {
         Container(config, "Configuration", "YAML: configs/config.yaml", "Paths, variables, metrics, guardrails, random seed 42")
-        ContainerDb(sample, "Sample Dataset", "CSV: data/sample/sample.csv", "Synthetic student records")
+        ContainerDb(sample, "Sample Dataset", "CSV: data/survey/survey_clean.csv", "De-identified survey responses")
 
         Container(process, "Data Processing [M1]", "Python: src/process_data.py", "Validates columns and counts, removes invalid records, computes per-student rates")
         ContainerDb(processed, "Processed Metrics", "CSV: data/processed/metrics_summary.csv", "Student-level rates plus OVERALL row")
@@ -87,7 +87,7 @@ Records with negative counts, or with invitations or offers exceeding applicatio
 ## 6. Data flow and reproducibility
 
 1. `configs/config.yaml` defines paths, variables, metrics and the seed.
-2. `src/process_data.py` reads `data/sample/sample.csv`, validates it and writes `data/processed/metrics_summary.csv`.
+2. `src/process_data.py` reads `data/survey/survey_clean.csv` (produced by `src/prepare_survey.py` from the raw export), validates it and writes `data/processed/metrics_summary.csv`.
 3. `src/statistical_analysis.py` reads the processed file and writes `results/statistical_summary.csv` and `results/data_quality_summary.csv`.
 4. `src/benchmark.py` writes `results/analysis_summary.json` (internship yes vs no).
 5. `src/visualize.py` and the notebook write the figures to `reports/figures/`.
@@ -96,7 +96,7 @@ All stochastic steps use seed 42.
 
 ## 7. Limitations
 
-- Eight synthetic records: percentiles (especially p99) and confidence intervals are illustrative only.
+- Small sample (n = 17; 11 applicants): percentiles (especially p99) and confidence intervals are imprecise. Inferential tests are in `src/inferential_analysis.py`.
 - The analysis is descriptive and exploratory; the internship comparison does not establish causation.
 - The current data are survey-style counts, not timed measurements, so the warm-up/benchmark split used in latency studies does not apply to this dataset.
 - Results cannot be generalized to the IT student population.

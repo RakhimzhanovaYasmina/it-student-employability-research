@@ -1,0 +1,99 @@
+{
+  "leave_one_out_spearman": {
+    "technical_skills": {
+      "min": 0.3674842076295835,
+      "max": 0.739015302291689,
+      "sign_changes": 0
+    },
+    "communication_skills": {
+      "min": -0.6331341845971686,
+      "max": -0.21318736920460632,
+      "sign_changes": 0
+    }
+  },
+  "n_respondents": 17,
+  "n_applicants": 11,
+  "difficulty_median": 4.0,
+  "difficulty_mean": 3.823529411764706,
+  "difficulty_ge4_share": 0.5882352941176471,
+  "working_in_it_n": 5,
+  "pooled": {
+    "internship": {
+      "n_students": 7,
+      "applications": 48,
+      "interviews": 17,
+      "offers": 10,
+      "interview_rate": 0.3541666666666667,
+      "interview_rate_wilson": [
+        0.23433457112685735,
+        0.4956120354593591
+      ],
+      "offer_rate": 0.20833333333333334,
+      "offer_rate_wilson": [
+        0.11730147795889813,
+        0.3425917352135348
+      ],
+      "mean_student_rate_interview": 0.3363945578231292,
+      "median_student_rate_interview": 0.2666666666666666,
+      "iqr_interview": [
+        0.225,
+        0.4857142857142857
+      ],
+      "mean_student_rate_offer": 0.195578231292517,
+      "median_student_rate_offer": 0.2,
+      "students_with_offer": 5
+    },
+    "no_internship": {
+      "n_students": 4,
+      "applications": 17,
+      "interviews": 3,
+      "offers": 2,
+      "interview_rate": 0.17647058823529413,
+      "interview_rate_wilson": [
+        0.0619101371254899,
+        0.41029929017375777
+      ],
+      "offer_rate": 0.11764705882352941,
+      "offer_rate_wilson": [
+        0.03287908001292092,
+        0.3433684249770991
+      ],
+      "mean_student_rate_interview": 0.14583333333333331,
+      "median_student_rate_interview": 0.125,
+      "iqr_interview": [
+        0.0,
+        0.2708333333333333
+      ],
+      "mean_student_rate_offer": 0.11458333333333333,
+      "median_student_rate_offer": 0.0625,
+      "students_with_offer": 2
+    },
+    "all_applicants": {
+      "n_students": 11,
+      "applications": 65,
+      "interviews": 20,
+      "offers": 12,
+      "interview_rate": 0.3076923076923077,
+      "interview_rate_wilson": [
+        0.20886876704271462,
+        0.4279787205229433
+      ],
+      "offer_rate": 0.18461538461538463,
+      "offer_rate_wilson": [
+        0.10888765378062985,
+        0.29554222582704914
+      ],
+      "mean_student_rate_interview": 0.2670995670995671,
+      "median_student_rate_interview": 0.25,
+      "iqr_interview": [
+        0.1,
+        0.3666666666666667
+      ],
+      "mean_student_rate_offer": 0.1661255411255411,
+      "median_student_rate_offer": 0.1333333333333333,
+      "students_with_offer": 7
+    }
+  },
+  "random_seed": 42,
+  "bootstrap_iterations": 5000
+}

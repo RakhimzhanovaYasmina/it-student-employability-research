@@ -2,132 +2,142 @@
 
 ## 1. Project Information
 
-**Research Title:** Improving the Employability of IT Students with Little or No Professional Work Experience
+**Research Title:** Perceived Barriers and Early Job-Search Outcomes of IT Students Without Professional Experience: An Exploratory Survey
 
-**Authors:** Rakhimzhanova Yasmina and Utebayeva Anel 
+**Authors:** Yasmina Rakhimzhanova and Anel Utebayeva
 
 **GitHub Repository:** https://github.com/RakhimzhanovaYasmina/it-student-employability-research
 
-## 2. Research Type
+## 2. Research Design
 
-**Research approach:** Quantitative, with an exploratory data-analysis pipeline.
+**Research approach:** Quantitative, cross-sectional, exploratory survey research.
 
-The research questions focus on relationships between professional experience, practical experience, technical and communication skills, and employment prospects. These relationships can be investigated quantitatively using structured student-level data.
+The study uses an anonymous Google Forms survey completed by 17 IT students. The sample is a non-probability convenience sample. The analysis examines students' perceived barriers to entering the IT labour market and descriptive associations between practical experience, self-rated skills, and early job-search outcomes.
 
-At the current stage, the repository contains synthetic demonstration data only. No empirical conclusions can be drawn until suitable real data have been collected or obtained from a documented and appropriate source.
+The results are exploratory. The observational design and small sample do not support causal conclusions or broad generalisation to the IT student population.
 
 ## 3. Research Questions and Hypotheses
 
 ### RQ1
 
-What are the main difficulties and factors affecting the search for a first job among IT students with little or no professional experience?
+What factors do students perceive as hindering their first IT job, and is lack of professional experience associated with higher perceived difficulty?
 
-**H1₁ (Alternative Hypothesis):** Lack of professional experience is associated with a higher likelihood of difficulties in finding a first job among IT students.
+**H1 (Alternative):** Students without professional experience report higher job-search difficulty than students with professional experience.
 
-**H0₁ (Null Hypothesis):** Lack of professional experience is not associated with a significant increase in difficulties in finding a first job among IT students.
+**H0 (Null):** Perceived job-search difficulty is not associated with professional experience.
 
 ### RQ2
 
-How does practical experience gained through academic projects and internships affect the employment prospects of IT students?
+How are academic projects and internships associated with interview invitations, job offers, and current IT employment?
 
-**H1₂ (Alternative Hypothesis):** IT students with practical experience gained through academic projects or internships have better employment prospects than students without such experience.
+**H2 (Alternative):** Students with internship experience have a higher interview-invitation rate than students without internship experience.
 
-**H0₂ (Null Hypothesis):** Practical experience gained through academic projects or internships has no statistically significant relationship with the employment prospects of IT students.
+**H0 (Null):** Internship experience is not associated with the interview-invitation rate.
 
 ### RQ3
 
-How does the level of technical and communication skills affect the employment prospects of IT students with little or no professional work experience?
+How are self-rated technical and communication skills associated with early job-search outcomes?
 
-**H1₃ (Alternative Hypothesis):** Higher levels of technical and communication skills are associated with better employment prospects among IT students with little or no professional work experience.
+**H3 (Alternative):** Higher self-rated technical skill is positively associated with the interview-invitation rate.
 
-**H0₃ (Null Hypothesis):** Technical and communication skill levels have no statistically significant relationship with employment prospects among IT students with little or no professional work experience.
+**H0 (Null):** Self-rated technical skill is not associated with the interview-invitation rate.
 
-## 4. Variable Matrix
+Communication skills and other outcomes are also explored descriptively; they are not part of the three pre-specified primary hypotheses.
 
-| Research Question | Independent Variables | Dependent Variables | Controlled / Potential Confounding Variables |
+## 4. Variables and Operational Measures
+
+| Research question | Explanatory variables | Outcomes | Notes / potential confounders |
 |---|---|---|---|
-| RQ1 | Presence or absence of professional experience | Reported difficulty finding a first job | Education level, year of study, major, technical skills, portfolio projects |
-| RQ2 | Presence and amount of academic project experience and internships | Interview invitations, job offers, first-job status | Year of study, major, technical skills, number of applications, résumé quality |
-| RQ3 | Technical skill level and communication skill level | Interview invitations, job offers, employment status | Year of study, major, practical experience, number of applications, portfolio |
+| RQ1 | Professional experience (yes/no) | Self-reported job-search difficulty (1–5); selected barriers | Study year, IT track, skills, practical experience |
+| RQ2 | Internship (yes/no); number of academic projects | Interview invitations, job offers, current IT employment | Applications, study year, IT track, skills; observational comparison only |
+| RQ3 | Self-rated technical skills (1–5); communication skills (1–5) | Interview-invitation rate; offer rate in exploratory analyses | Internship, projects, applications, study year, IT track |
 
-The variables follow the research framework established in Task 1. Operational definitions and measurement instruments must be finalized before analysing real data.
+The dataset contains 17 respondent records. All 17 respondents consented and were retained. Six respondents had submitted no applications; therefore, the rate analyses use the 11 applicants, while perception analyses use all 17 respondents.
 
 ## 5. Metrics and Baseline
 
-### Primary Metric
+### Primary outcome metric
 
-**Interview Invitation Rate**
+**Student-level interview-invitation rate:**
 
-Formula:
+`r_i = interview invitations_i / job applications_i`
 
-Interview Invitation Rate = Total Interview Invitations / Total Job Applications
+This rate is defined only for respondents with at least one application. Respondents with zero applications are not assigned a zero rate because not applying is different from applying without receiving an invitation.
 
-This metric represents the proportion of applications resulting in interview invitations, provided that the data source records applications and invitations consistently.
+### Additional metrics
 
-### Secondary Metrics
+- **Student-level offer rate:** job offers divided by applications, for applicants only.
+- **Pooled interview-invitation rate:** total interview invitations divided by total applications in a group.
+- **Pooled offer rate:** total job offers divided by total applications in a group.
+- **Perceived difficulty:** self-reported rating on a five-point scale.
+- **Current IT employment:** number and proportion of respondents currently working in IT.
+- **Perceived barriers:** number and proportion of respondents selecting each barrier.
 
-- **Job Offer Rate per Application:** Total Job Offers / Total Job Applications.
-- **Average Interview Invitations:** Mean number of interview invitations per student.
-- **First IT Job Status:** Number or proportion of students who obtained a first IT job, if this information is collected.
+### Observed sample and descriptive baseline
 
-These metrics describe different employment outcomes and should not be treated as interchangeable.
+- Total respondents: **17**.
+- Applicants: **11**; respondents with no applications: **6**.
+- Total applications: **65**.
+- Interview invitations: **20**; pooled interview-invitation rate: **30.8%**.
+- Job offers: **12**; pooled offer rate: **18.5%**.
+- Respondents currently working in IT: **5**.
+- Mean perceived job-search difficulty: **3.82/5**.
 
-### Guardrail Metrics
+The main RQ2 descriptive comparison is between applicants without internship experience (baseline: 4 applicants, 17 applications) and applicants with internship experience (7 applicants, 48 applications). Their pooled interview-invitation rates are 17.6% and 35.4%, respectively. This is an observational comparison and must not be interpreted as evidence that internships caused the difference.
 
-- **Missing Values:** Number of required data fields that are empty.
-- **Invalid Records:** Number of records that violate defined data-quality rules.
-- **Sample Size:** Number of eligible observations available for analysis.
+## 6. Statistical Analysis and Reproducibility
 
-Guardrail metrics monitor data quality and the reliability of the analysis. They do not independently establish whether a hypothesis is supported.
+The analysis pipeline includes the following scripts:
 
-### Baseline
+- `src/prepare_survey.py` — prepares the survey export, including the English analysis schema and respondent inclusion based on consent.
+- `src/process_data.py` — validates and processes the survey data and derives analysis variables.
+- `src/statistical_analysis.py` — produces descriptive statistics and summary measures.
+- `src/inferential_analysis.py` — performs the pre-specified and exploratory inferential analyses.
+- `src/visualize.py` — generates figures used in the analysis and paper.
+- `src/benchmark.py` — supports the project's benchmark/demo workflow; it is not the main empirical survey-analysis entry point.
 
-**Demonstration baseline:** The current script compares synthetic records with and without internship experience. This comparison is used only to verify that the analysis pipeline runs successfully.
+The empirical analysis uses:
 
-**Planned empirical baseline:** Once suitable real data are available, students without internship experience will be compared with students who have internship experience, provided that the final dataset supports this comparison.
+- Bootstrap resamples: **5,000**.
+- Random seed: **42**.
+- Significance level: **0.05**.
+- Primary hypothesis tests in the Holm correction family: **3**.
+- Rank-based methods for ordinal ratings and small-sample comparisons.
+- Wilson confidence intervals for pooled proportions, interpreted descriptively because applications are clustered within students.
+- Exact permutation p-values for rank-based group comparisons, effect sizes (including Cliff's delta), and Spearman's rank correlation where appropriate.
+- Holm adjustment for the three primary tests; exploratory tests are reported without that adjustment.
 
-This will be an observational comparison rather than a randomized experiment. Potential confounding variables, including year of study, technical skills, academic projects, and application volume, must be considered before drawing conclusions.
-
-The synthetic demonstration results do not establish a real-world relationship between internships and employability.
-
-## 6. Controlled Conditions and Reproducibility
-
-The current pipeline uses:
-
-- A fixed CSV schema and documented sample file.
-- A configuration file at `configs/config.yaml`.
-- An analysis script at `src/benchmark.py`.
-- Configurable input and output paths.
-- Data-quality checks before calculating metrics.
-- Python 3.14.3, recorded in `.python-version`.
-- PyYAML 6.0.3, pinned in `requirements.txt`.
-
-The script reads the input and output paths from `configs/config.yaml`. The dependency can be installed using:
+Install the dependencies listed in `requirements.txt` with:
 
 `python -m pip install -r requirements.txt`
 
-The demonstration experiment can be run using:
+The repository includes a de-identified survey dataset at `data/survey/survey_clean.csv`, a processed metrics file at `data/processed/metrics_summary.csv`, configuration in `configs/config.yaml`, analysis scripts in `src/`, and generated outputs in the results/report folders. The original Google Forms export is kept out of version control for privacy. The exact analysis commands and configured input/output paths should be followed as documented in the repository README and configuration file.
 
-`python src/benchmark.py`
+## 7. Main Findings and Hypothesis Outcomes
 
-The included synthetic sample, configuration, and analysis script are version-controlled. Generated analysis results are excluded from Git and can be recreated by running the script.
+The most frequently reported barriers were lack of professional experience (13 of 17 respondents; 76.5%), insufficient technical skills (11 of 17; 64.7%), and lack of a portfolio or projects (10 of 17; 58.8%).
 
-For the empirical analysis, the team must document the real data source, collection period, inclusion criteria, variable definitions, missing-data handling, and Python version.
+For the internship comparison, the pooled interview-invitation rate was higher among applicants with internship experience (35.4%) than among those without it (17.6%). The estimated group difference was not statistically significant after the study's testing procedure. Self-rated technical skills had a moderate positive Spearman association with interview-invitation rate, but this result was also not statistically significant after Holm correction.
 
-## 7. Current Limitations
+None of the three pre-specified hypotheses was statistically supported in this sample after Holm correction (all adjusted p-values exceeded 0.05). This does not demonstrate that the relationships are absent; the small sample provides limited statistical power and estimates are imprecise.
 
-1. The sample dataset is synthetic and contains only eight records.
-2. The sample is intended to test software execution and does not represent the IT student population.
-3. The demonstration metrics cannot confirm or reject any research hypothesis.
-4. The current script performs descriptive analysis and data-quality checks. It does not conduct statistical significance tests or control for confounding variables.
-5. The operational definition of job-search difficulty for RQ1 requires a documented measurement method.
-6. The current internship comparison is illustrative and cannot establish a causal relationship between internships and employment outcomes.
+## 8. Limitations
 
-## 8. Next Research Steps
+1. The sample is small (17 respondents; 11 applicants) and was recruited through convenience channels.
+2. The sample is not representative of all IT students; results should not be generalised to the wider population.
+3. The study is observational and cross-sectional; associations cannot establish causation.
+4. Skills and perceived difficulty are self-reported single-item measures and may be affected by self-assessment bias.
+5. Internship experience and current IT employment may overlap, complicating interpretation of employment status.
+6. Wilson intervals for pooled application-level rates treat applications as independent and do not account for multiple applications from the same student.
+7. Six respondents had no applications, so their interview and offer rates are undefined and excluded from rate analyses.
+8. Three respondents selected more than the requested maximum number of barriers, and one respondent reported not yet searching while also reporting two applications; these inconsistencies were retained and flagged.
+9. Potential confounding variables were not jointly adjusted for in the primary analysis.
 
-1. Identify an appropriate empirical data source or collect data using an approved research instrument.
-2. Define inclusion criteria and operational measurements for every variable.
-3. Document data provenance and prepare an anonymized analysis dataset.
-4. Extend the pipeline with appropriate statistical tests when the data and sample size support them.
-5. Consider relevant confounding variables during the analysis.
-6. Interpret the results in relation to H0 and H1 and report limitations transparently.
+## 9. Future Research
+
+1. Recruit a larger and more diverse sample across institutions, study years, and IT specialisations.
+2. Use longitudinal data to follow applications, interviews, offers, and employment outcomes over time.
+3. Collect more objective measures of technical and communication skills alongside self-assessments.
+4. Record relevant covariates consistently, including application volume, study year, IT track, project experience, and internship characteristics.
+5. With a sufficiently large sample, use models that account for the number of applications and the clustering of applications within students.
+6. Pre-register hypotheses, outcome definitions, and a target sample size for a follow-up study.
